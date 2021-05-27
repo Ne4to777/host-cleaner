@@ -1,0 +1,46 @@
+{
+    "root": true,
+    "parserOptions": {
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "ecmaVersion": 2020
+        },
+        "impliedStrict": true
+    },
+    "globals": {
+        "window": "readonly",
+        "document": "readonly",
+        "_require": "readonly",
+        "__non_webpack_require__": "readonly",
+    },
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "parser": "@typescript-eslint/parser",
+            "extends": [
+                "plugin:@typescript-eslint/recommended",
+                "airbnb-base",
+                "airbnb-base/rules/strict",
+                "./node_modules/@yandex-market/codestyle/src/rules/style.js",
+                "./node_modules/@yandex-market/codestyle/src/rules/market.js",
+                "./node_modules/@yandex-market/codestyle/src/rules/typescript.js"
+            ],
+            "rules": {
+                "no-console": "off",
+                "strict": "off",
+                "no-use-before-define": "off",
+                "semi": "error",
+                "implicit-arrow-linebreak": "off",
+                "object-curly-newline": "off",
+                "no-confusing-arrow": "off",
+                "operator-linebreak": "off",
+                "comma-dangle": "off",
+                "indent": "off",
+                "@typescript-eslint/indent": ["error"],
+                "@typescript-eslint/no-explicit-any": "off",
+                "@typescript-eslint/ban-ts-comment": "off",
+                "function-paren-newline":"off"
+            }
+        }
+    ]
+}

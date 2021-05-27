@@ -1,0 +1,48 @@
+{
+  "name": "host-cleaner",
+  "version": "1.0.0",
+  "description": "Host Cleaner",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npm run build:ts && npm run build:files",
+    "build:ts": "npm run remove:dist && npx tsc --build tsconfig.release.json",
+    "build:files": "cp package.json package-lock.json README.md .npmrc .npmignore dist/",
+    "inspect": "npx ts-node src inspect",
+    "watch": "npx tsc && npx concurrently \"tsc -w\" \"npx nodemon -q dist/index.js\"",
+    "lint": "npx eslint --ext .ts src/",
+    "lint:fix": "npm run lint -- --fix",
+    "prepublish:npm": "npm run build && npm run lint",
+    "publish:npm": "npm publish dist/ --registry='http://npm.yandex-team.ru' --public",
+    "clean": "npm run remove:dist",
+    "remove:dist": "rm -rf dist",
+    "revert": "rm -rf node_modules && rm -rf package-lock.json",
+    "reinstall": "npm run revert && npm i",
+    "clean:reports": "rm -f reports/*",
+    "task:dismissedUsers": "npx ts-node src/tasks/dismissedUsers",
+    "task:orphanedUsers": "npx ts-node src/tasks/orphanedUsers"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "dotenv": "^10.0.0",
+    "node-ssh": "^11.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^15.6.0",
+    "@types/node-ssh": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.6.1",
+    "@typescript-eslint/parser": "^4.6.1",
+    "@yandex-market/codestyle": "^3.3.1",
+    "babel-eslint": "^10.1.0",
+    "concurrently": "^6.2.0",
+    "eslint": "^7.12.1",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-airbnb-typescript": "^12.0.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-market": "^0.21.0",
+    "nodemon": "^2.0.7",
+    "typescript": "^4.1.3"
+  }
+}
