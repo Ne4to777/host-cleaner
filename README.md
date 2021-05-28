@@ -16,7 +16,7 @@ npm i
 - <b>usersPath</b> - пусть к юзерам на хосте (настроен для логрусов)
 - <b>hosts</b> - хосты (настроены для логрусов)
 
-<b>.env</b>:
+<b>.env</b> (создать свой):
 - <b>PRIVATE_KEY_PATH</b> - путь ssh ключа (а-ля '/home/coolname/.ssh/id_rsa')
 - <b>STAFF_AUTH_TOKEN</b> - токен для Стаффа
 
