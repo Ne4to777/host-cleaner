@@ -1,12 +1,7 @@
 import {promises as fs, existsSync} from 'fs';
 
-import {config} from 'dotenv';
-
 import {connector, getDiskUsage, removeRecByPath} from '../ssh';
 import {Sniffer} from './types';
-
-type InitEnv = () => any
-export const initEnv: InitEnv = () => config({path: './.env'});
 
 type GetQuery = (params:{
     query: string,

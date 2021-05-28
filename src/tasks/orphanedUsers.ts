@@ -1,10 +1,8 @@
 import {getOrphanedUsersPaths} from '../sniffers';
-import {forEachAsync, initEnv, runner} from '../utils';
+import {forEachAsync, runner} from '../utils';
 import configs from '../configs';
 
 const {hosts} = configs;
-
-initEnv();
 
 const run = async () => {
     console.log('TASK: ', 'Remove Orphaned User Services');

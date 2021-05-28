@@ -1,10 +1,8 @@
-import {forEachAsync, initEnv, runner} from '../utils';
 import {getDismissedUsersPaths} from '../sniffers';
+import {forEachAsync, runner} from '../utils';
 import configs from '../configs';
 
 const {hosts} = configs;
-
-initEnv();
 
 const run = async () => {
     console.log('TASK: Remove Dismissed User Directories');
