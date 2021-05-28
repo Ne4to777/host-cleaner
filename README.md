@@ -6,7 +6,7 @@
 
 ## Установка
 ```
-git clone && cd host-cleaner 
+git clone https://github.yandex-team.ru/nybble/host-cleaner.git && cd host-cleaner 
 npm i
 ```
 
