@@ -1,20 +1,17 @@
 import {connector} from '../../ssh';
-import {arrayToExistenceMap} from '../../utils';
+import {arrayToExistenceMap, pipe} from '../../utils';
 import {getAllDismissedUsersCached} from '../../api';
+import type {Sniffer} from '../../helpers';
+import {getUsersAllArray} from '../../helpers';
 import configs from '../../configs';
-import type {Sniffer} from '../../utils/types';
-import {getUsersAllArray} from './helpers';
 
 const {usersPath} = configs;
 
-export const getDismissedUsersPaths: Sniffer = async ({host}) => {
-    const bash = connector({host});
-    const [usersAll, usersDismissed] = await Promise.all([
-        getUsersAllArray(bash)(),
-        getAllDismissedUsersCached()
-    ]);
-    const usersDismissedMap = arrayToExistenceMap(usersDismissed);
-    return usersAll
-        .filter(user => Boolean(usersDismissedMap[user]))
-        .map(user => `${usersPath}/${user}`);
-};
+export const getDismissedUsersPaths: Sniffer = pipe([
+    connector,
+    getUsersAllArray,
+    bashUsersAllArray => Promise.all([bashUsersAllArray(), getAllDismissedUsersCached()]),
+    ([usersAll, usersDismissed]) => usersAll
+        .filter((user: string) => Boolean(arrayToExistenceMap(usersDismissed)[user]))
+        .map((user: string) => `${usersPath}/${user}`)
+]);

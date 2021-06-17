@@ -8,9 +8,11 @@
     "build:ts": "npm run remove:dist && npx tsc --build tsconfig.release.json",
     "build:files": "cp package.json package-lock.json README.md .npmrc .npmignore dist/",
     "inspect": "npx ts-node src inspect",
+    "start": "npx tsc && node dist/index.js",
     "watch": "npx tsc && npx concurrently \"tsc -w\" \"npx nodemon -q dist/index.js\"",
     "lint": "npx eslint --ext .ts src/",
     "lint:fix": "npm run lint -- --fix",
+    "lint:typescript": "npx tsc --build tsconfig.lint.json",
     "prepublish:npm": "npm run build && npm run lint",
     "publish:npm": "npm publish dist/ --registry='http://npm.yandex-team.ru' --public",
     "clean": "npm run remove:dist",
@@ -18,8 +20,9 @@
     "revert": "rm -rf node_modules && rm -rf package-lock.json",
     "reinstall": "npm run revert && npm i",
     "clean:reports": "rm -f reports/*",
-    "task:dismissedUsers": "npx ts-node src/tasks/dismissedUsers",
-    "task:orphanedUsers": "npx ts-node src/tasks/orphanedUsers"
+    "task:cleanDismissedUsers": "npx ts-node src/tasks/cleanDismissedUsers",
+    "task:cleanOrphanedUsers": "npx ts-node src/tasks/cleanOrphanedUsers",
+    "task:mailToDoubledUsers": "npx ts-node src/tasks/mailToDoubledUsers"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +30,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "dotenv": "^10.0.0",
+    "emailjs": "^3.4.0",
     "node-ssh": "^11.1.1"
   },
   "devDependencies": {

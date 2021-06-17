@@ -1,14 +1,22 @@
 import {connector} from '../../ssh';
-import {arrayToExistenceMap, excludeFromMap} from '../../utils';
-import {getUsersAllServicesArray, getUsersExistServices, getUsersSymlinksArray} from './helpers';
-import {Sniffer} from '../../utils/types';
+import {arrayToExistenceMap, excludeFromMap, pipe} from '../../utils';
+import {getUsersAllServicesArray, getUsersExistServices, getUsersSymlinksArray} from '../../helpers';
+import type {Sniffer} from '../../helpers';
 
-export const getOrphanedUsersPaths: Sniffer = async ({host}) => {
-    const bash = connector({host});
-    const usersAllServices = await getUsersAllServicesArray(bash)();
-    const usersAllServicesMap = arrayToExistenceMap(usersAllServices);
-    const usersSymlinks = await getUsersSymlinksArray(bash)();
-    const usersExistServices = await getUsersExistServices(bash)(usersSymlinks);
-    const usersServicesOrphanedMap = excludeFromMap({...usersAllServicesMap})(usersExistServices);
-    return Object.keys(usersServicesOrphanedMap);
-};
+export const getOrphanedUsersPaths: Sniffer = pipe([
+    connector,
+    bash => pipe([
+        getUsersAllServicesArray(bash),
+        arrayToExistenceMap,
+        excludeFromMap,
+        excludeFromServices => pipe([
+            getUsersExistServices,
+            bashUsersExistServices => pipe([
+                getUsersSymlinksArray(bash),
+                bashUsersExistServices,
+            ])(),
+            excludeFromServices,
+        ])(bash),
+    ])(),
+    Object.keys,
+]);

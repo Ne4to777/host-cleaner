@@ -1,15 +1,34 @@
 import * as dotenv from 'dotenv';
 import axios from 'axios';
 
-import {getQuery} from '../utils';
-
 dotenv.config({path: './.env'});
 
 const {STAFF_AUTH_TOKEN} = process.env;
 
 const STAFF_HOST = 'https://staff-api.yandex-team.ru';
 const STAFF_PATH = '/v3/persons?';
-const STAFF_QUERY = '_fields=department_group&login=';
+
+export type QueryParams = {
+    query?: string,
+    conditions?: string[],
+    fields?: string[],
+    limit?: number,
+}
+type GetQuery = (params: QueryParams) => string
+
+export const getQuery: GetQuery = ({
+    query = '',
+    conditions = [],
+    fields = [],
+    limit = 0
+}) => {
+    const result = [];
+    if (query) result.push(`_query=${encodeURIComponent(query)}`);
+    if (conditions.length) result.push(conditions.join(','));
+    if (fields.length) result.push(`_fields=${fields.join(',')}`);
+    if (limit) result.push(`_limit=${limit}`);
+    return result.join('&');
+};
 
 const STAFF_DISMISSED_QUERY = getQuery({
     limit: 5000,
@@ -22,13 +41,22 @@ const HEADERS = {
     Authorization: `OAuth ${STAFF_AUTH_TOKEN}`
 };
 
-const getUserIdUrl = (id:string) => STAFF_HOST + STAFF_PATH + STAFF_QUERY + id;
+export const getRequest = (params: Record<string, any>): string => STAFF_HOST + STAFF_PATH + getQuery(params);
 
-const getUserById = (id:string) => axios
-    .get(getUserIdUrl(id), {
+export const getUserById = (id:string): Promise<any> => axios
+    .get(getRequest({conditions: [`login=${id}`]}), {
         headers: HEADERS
     })
-    .then(res => res.data.result[0].department_group);
+    .then(res => res.data.result);
+
+export const getUsersByIds = (ids:string[]): Promise<any> => axios
+    .get(getRequest({
+        conditions: [`login=${ids.join(',')}`],
+        fields: ['login', 'work_email']
+    }), {
+        headers: HEADERS
+    })
+    .then(res => res.data.result);
 
 const ALL_USERS_DISMISSED_URL = STAFF_HOST + STAFF_PATH + STAFF_DISMISSED_QUERY;
 
