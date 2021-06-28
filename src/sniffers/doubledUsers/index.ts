@@ -1,5 +1,5 @@
-import {connector} from '../../ssh';
-import {folderizeLastLeaf, getAllServicesArray, getServicesInfo} from '../../helpers';
+import {connector, getAllServicesArray, getServicesInfo} from '../../api';
+import {folderizeLastLeaf} from '../../helpers';
 import type {Sniffer} from '../../helpers';
 import {pipe, reduceAsync, reduce} from '../../utils';
 

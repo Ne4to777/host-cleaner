@@ -5,6 +5,7 @@ import {
     info,
     pipe,
     processExit0,
+    log
 } from '../utils';
 
 const task = {
@@ -18,7 +19,7 @@ pipe([
         aggregator,
         hostsIterator,
         mailer(_task),
-    ]),
+    ])(_task),
     info('Task is done!'),
     processExit0
 ])(task);

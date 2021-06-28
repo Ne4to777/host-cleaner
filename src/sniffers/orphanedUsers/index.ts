@@ -1,6 +1,5 @@
-import {connector} from '../../ssh';
+import {connector, getUsersAllServicesArray, getUsersExistServices, getUsersSymlinksArray} from '../../api';
 import {arrayToExistenceMap, excludeFromMap, pipe} from '../../utils';
-import {getUsersAllServicesArray, getUsersExistServices, getUsersSymlinksArray} from '../../helpers';
 import type {Sniffer} from '../../helpers';
 
 export const getOrphanedUsersPaths: Sniffer = pipe([

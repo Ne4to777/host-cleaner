@@ -1,8 +1,6 @@
-import {connector} from '../../ssh';
 import {arrayToExistenceMap, pipe} from '../../utils';
-import {getAllDismissedUsersCached} from '../../api';
+import {getAllDismissedUsersCached, getUsersAllArray, connector} from '../../api';
 import type {Sniffer} from '../../helpers';
-import {getUsersAllArray} from '../../helpers';
 import configs from '../../configs';
 
 const {usersPath} = configs;

@@ -1,6 +1,6 @@
 import type {HostRunner} from '../helpers';
 import {reportWrite} from '../helpers';
-import {connector, getDiskUsage, removeRecByPath} from '../ssh';
+import {connector, getDiskUsage, removeRecByPath} from '../api';
 import {mapAsync, I} from '../utils';
 import config from '../configs';
 
