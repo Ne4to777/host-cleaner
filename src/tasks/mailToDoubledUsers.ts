@@ -5,7 +5,6 @@ import {
     info,
     pipe,
     processExit0,
-    log
 } from '../utils';
 
 const task = {
