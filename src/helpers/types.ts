@@ -15,7 +15,10 @@ export type Task = {
     sniffer: Sniffer
 }
 
-export type RunnerWithParams = (host: string) => Promise<any>
+export type RunnerWithParams = (x: any) => Promise<any>
 export type Runner = (task: Task) => RunnerWithParams
+
+export type HostRunnerWithParams = (host: string) => Promise<any>
+export type HostRunner = (task: Task) => HostRunnerWithParams
 
 export type ReportWrite = (params: { task: Task, folder: string }) => (content: string) => Promise<any>

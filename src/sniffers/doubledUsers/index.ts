@@ -1,7 +1,7 @@
 import {connector} from '../../ssh';
 import {folderizeLastLeaf, getAllServicesArray, getServicesInfo} from '../../helpers';
 import type {Sniffer} from '../../helpers';
-import {pipe, reduceAsync, reduce, log} from '../../utils';
+import {pipe, reduceAsync, reduce} from '../../utils';
 
 export const getDoubledUsersPaths: Sniffer = pipe([
     connector,

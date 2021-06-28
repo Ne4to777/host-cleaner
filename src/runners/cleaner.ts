@@ -1,14 +1,17 @@
-import type {Runner} from '../helpers';
+import type {HostRunner} from '../helpers';
 import {reportWrite} from '../helpers';
 import {connector, getDiskUsage, removeRecByPath} from '../ssh';
-import {mapAsync} from '../utils';
+import {mapAsync, I} from '../utils';
+import config from '../configs';
 
-export const cleaner: Runner = task => async host => {
+const {mode} = config;
+
+export const cleaner: HostRunner = task => async host => {
     const {name, sniffer} = task;
     const report: string[] = [name, `HOST: ${host}`];
     const bash = connector({host});
     const bashDiskUsage = getDiskUsage(bash);
-    const bashRemove = removeRecByPath(bash);
+    const bashRemove = mode === 'real' ? removeRecByPath(bash) : I;
     console.log('Gathering paths...');
     const paths = await sniffer({host});
     const write = reportWrite({task, folder: host});

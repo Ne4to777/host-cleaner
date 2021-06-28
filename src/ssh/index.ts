@@ -8,7 +8,7 @@ const ssh = new NodeSSH();
 
 type Connector = (params: {host:string}) => (command:string, folder:string) => Promise<any>
 
-export const connector:Connector = ({host}) => {
+export const connector: Connector = ({host}) => {
     if (!host) throw new Error('SSH host is missed');
     const session = ssh.connect({
         host,

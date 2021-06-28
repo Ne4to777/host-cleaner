@@ -61,7 +61,7 @@ export type AnyToAny4T = (...xs: any) => AnyToAny3T;
 type IType = <T>(x: T) => T
 export const I: IType = x => x;
 
-type TType = <T, K>(x: T) => (f:(_x: T) => K) => K
+type TType = <T, K>(x?: T) => (f:(_x?: T) => K) => K
 export const T:TType = x => f => f(x);
 
 type PipeSyncReducer = <Arg, First, Second>(acc: (x: Arg) => First, f: (x: First) => Second) => (x: Arg) => Second

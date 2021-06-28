@@ -1,7 +1,7 @@
 import {existsSync, promises as fs} from 'fs';
 
 import {getSymlinkAbsPath} from '../ssh';
-import {mapAsync, info, processExit1, reduceAsync, replaceBy, splitByLines, pipe, reduce} from '../utils';
+import {mapAsync, info, reduceAsync, replaceBy, splitByLines, pipe, reduce} from '../utils';
 import configs from '../configs';
 
 import type {
@@ -32,6 +32,13 @@ export const getUsersAllServicesArray: VoidToArrayAsync = bash => () => bash(
 
 export const getAllServicesArray: VoidToArrayAsync = bash => () => bash(
     'find . -mindepth 1 -maxdepth 1 -type d',
+    servicesPath
+)
+    .then(replaceBy(/\.\//g, `${servicesPath}/`))
+    .then(splitByLines);
+
+export const getAllServiceNodeModules: VoidToArrayAsync = bash => () => bash(
+    'find . -name node_modules -type d -maxdepth 3',
     servicesPath
 )
     .then(replaceBy(/\.\//g, `${servicesPath}/`))

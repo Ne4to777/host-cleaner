@@ -1,4 +1,5 @@
 export type Config = {
+    mode: 'real' | 'fake',
     servicesPath: string,
     usersPath: string,
     email: {
@@ -11,6 +12,7 @@ export type Config = {
 }
 
 export default ({
+    mode: 'fake',
     servicesPath: '/var/lib/yandex',
     usersPath: '/home',
     email: {
