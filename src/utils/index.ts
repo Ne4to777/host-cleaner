@@ -47,7 +47,9 @@ export const arrayToExistenceMap: ArrayToExistenceMap = xs => xs.reduce((acc, x)
 }, {});
 
 export type SplitByLines = (x: string) => string[]
-export const splitByLines: SplitByLines = list => list.split('\n');
+export const splitByLines: SplitByLines = x => x.split('\n');
+export type SplitBySpaces = (x: string) => string[]
+export const splitBySpaces: SplitBySpaces = x => x.split(' ');
 export type ReplaceBy = (re: RegExp, to: string) => (x: string) => string
 export const replaceBy: ReplaceBy = (re, to) => x => x.replace(re, to);
 

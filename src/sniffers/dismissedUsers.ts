@@ -1,7 +1,7 @@
-import {arrayToExistenceMap, pipe} from '../../utils';
-import {getAllDismissedUsersCached, getUsersAllArray, connector} from '../../api';
-import type {Sniffer} from '../../helpers';
-import configs from '../../configs';
+import {arrayToExistenceMap, pipe} from '../utils';
+import {getAllDismissedUsersCached, getUsersAllArray, connector} from '../api';
+import type {Sniffer} from '../helpers';
+import configs from '../configs';
 
 const {usersPath} = configs;
 

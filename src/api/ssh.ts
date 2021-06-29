@@ -1,13 +1,16 @@
 import * as dotenv from 'dotenv';
 import {NodeSSH} from 'node-ssh';
 
-import {reduceAsync, replaceBy, splitByLines} from '../utils';
+import {reduceAsync, replaceBy, splitByLines, splitBySpaces} from '../utils';
 import type {
     GetUsersExistServices,
     VoidToArrayAsync,
-    GetServicesInfo
+    GetServicesInfo,
+    GetAllServiceGitBranches,
+    GetServiceUserGitBranches
 } from '../helpers';
 import configs from '../configs';
+import {getServiceInfoMap} from '../helpers';
 
 const {servicesPath, usersPath} = configs;
 
@@ -66,6 +69,24 @@ export const getAllServiceNodeModules: VoidToArrayAsync = bash => () => bash(
     .then(replaceBy(/\.\//g, `${servicesPath}/`))
     .then(splitByLines);
 
+export const getAllServiceGitBranches: GetAllServiceGitBranches = bash => path => bash(
+    'ls | cat | xargs -I % sh -c "cd %; git branch 2> /dev/null; cd .."',
+    path
+)
+    .then(replaceBy(/^\s|\*/g, ''))
+    .then(replaceBy(/\s+/g, ' '))
+    .then(replaceBy(/\s/g, '\n'))
+    .then(splitBySpaces);
+
+export const getServiceUserGitBranches: GetServiceUserGitBranches = bash => path => bash(
+    'git branch 2> /dev/null',
+    path
+)
+    .then(replaceBy(/\*/g, ''))
+    .then(replaceBy(/^\s+/g, ''))
+    .then(replaceBy(/\s+/g, ' '))
+    .then((x: string) => x ? splitBySpaces(x) : []);
+
 export const getUsersExistServices: GetUsersExistServices = bash => reduceAsync(
     async (acc: string[], link: string) => {
         const symlinkAbsPath = await getSymlinkAbsPath(bash)(link, usersPath);
@@ -81,11 +102,11 @@ export const getUsersAllArray: VoidToArrayAsync = bash => () => bash(
     .then(splitByLines);
 
 export const getServicesInfo: GetServicesInfo = bash => path => bash(
-    'ls -l',
+    'ls -ld */',
     path
 )
     // @ts-ignore
     .then((servicesinfo: string) => servicesinfo
         .split('\n')
         .slice(1)
-        .map((row:string) => row.replace(/\s+/g, ' ').split(' ')));
+        .map((row:string) => getServiceInfoMap(row.replace(/\s+/g, ' ').split(' '))));

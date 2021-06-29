@@ -23,7 +23,8 @@
     "task:cleanDismissedUsers": "npx ts-node src/tasks/cleanDismissedUsers",
     "task:cleanOrphanedUsers": "npx ts-node src/tasks/cleanOrphanedUsers",
     "task:cleanNodeModules": "npx ts-node src/tasks/cleanNodeModules",
-    "task:mailToDoubledUsers": "npx ts-node src/tasks/mailToDoubledUsers"
+    "task:mailToDoubledUsers": "npx ts-node src/tasks/mailToDoubledUsers",
+    "task:mailAboutGitBranches": "npx ts-node src/tasks/mailAboutGitBranches"
   },
   "keywords": [],
   "author": "",

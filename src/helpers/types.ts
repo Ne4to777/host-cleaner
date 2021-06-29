@@ -5,14 +5,16 @@ export type GetUsersExistServices = (bash: (...xs:any) => any) => (usersSymlinks
 
 export type GetServicesInfo = (bash: (...xs:any) => any) => (path: string) => Promise<string[]>
 
-export type TrimLoginSuffix = (x:string) => string
-export type GetDoublesByLoginsMap = (refIndex:number) => (xs: string[]) => Record<string, string[]>
+export type GetAllServiceGitBranches = (bash: any) => (path: string) => Promise<string[]>
+
+export type GetServiceUserGitBranches = (bash: any) => (path:string) => Promise<string[]>
 
 export type HostsIterator = (runner: (host: string) => Promise<any>) => Promise<any>
 
 export type Task = {
     name: string,
-    sniffer: Sniffer
+    sniffer: Sniffer,
+    mailer?: (login:string, data: any) => string
 }
 
 export type RunnerWithParams = (x: any) => Promise<any>
@@ -22,3 +24,5 @@ export type HostRunnerWithParams = (host: string) => Promise<any>
 export type HostRunner = (task: Task) => HostRunnerWithParams
 
 export type ReportWrite = (params: { task: Task, folder: string }) => (content: string) => Promise<any>
+
+export type GetServiceInfoMap = (xs: string[])=> Record<string, string>

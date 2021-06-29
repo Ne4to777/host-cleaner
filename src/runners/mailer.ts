@@ -11,7 +11,6 @@ import {
     stringify,
 } from '../utils';
 import {getUsersByIds, sendEmail} from '../api';
-import {getEmailContent} from '../helpers/emailLayout';
 import config from '../configs';
 
 const {email: {subject}, mode} = config;
@@ -44,11 +43,11 @@ export const mailer: Runner = task => pipe([
                 emailsMap => pipe([
                     (login: string) => ({
                         subject,
-                        text: getEmailContent(login, dataMap[login]),
+                        text: task.mailer ? task.mailer(login, dataMap[login]) : '',
                         to: emailsMap[login]
                     }),
                     pipeSync([
-                        data => mode === 'real' ? sendEmail(data) : Promise.resolve(''),
+                        data => sendEmail(mode === 'real' ? data : {}),
                         catchAsync(pushReport),
                     ]),
                     pushReport

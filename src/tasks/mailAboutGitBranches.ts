@@ -1,4 +1,4 @@
-import {getDoubledUsersPaths} from '../sniffers';
+import {getGitBranches} from '../sniffers';
 import {aggregator, mailer} from '../runners';
 import {hostsIterator} from '../helpers';
 import {
@@ -6,16 +6,16 @@ import {
     pipe,
     processExit0,
 } from '../utils';
-import {getMailContent} from '../helpers/mailLayouts/doubledUsersLayout';
+import {getEmailContent} from '../helpers/mailLayouts/gitBranchesLayout';
 
 const task = {
-    name: 'DoubledUsers',
-    sniffer: getDoubledUsersPaths,
-    mailer: getMailContent
+    name: 'GitBranches',
+    sniffer: getGitBranches,
+    mailer: getEmailContent
 };
 
 pipe([
-    info('TASK: Notify Users With Doubled Services'),
+    info('TASK: Notify Users About Unused Git Branches'),
     _task => pipe([
         aggregator,
         hostsIterator,

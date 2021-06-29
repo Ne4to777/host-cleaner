@@ -7,6 +7,7 @@ import type {
     HostsIterator,
     RunnerWithParams,
     ReportWrite,
+    GetServiceInfoMap
 } from '.';
 
 const {hosts} = configs;
@@ -45,3 +46,8 @@ export const hostsIterator: HostsIterator = (runner: RunnerWithParams) =>
         .catch(info(`FAILED ITERATION ON HOST: ${host}`))
     )(hosts)
         .then(info('ALL HOSTS ARE ITERATED!'));
+
+export const getServiceInfoMap: GetServiceInfoMap = xs => ({
+    login: xs[2],
+    folderName: xs[8].replace(/\/$/, '')
+});
