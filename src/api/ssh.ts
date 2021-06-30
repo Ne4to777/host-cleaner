@@ -82,10 +82,10 @@ export const getServiceUserGitBranches: GetServiceUserGitBranches = bash => path
     'git branch 2> /dev/null',
     path
 )
-    .then(replaceBy(/\*/g, ''))
+    .then(replaceBy(/\*/g, ' '))
     .then(replaceBy(/^\s+/g, ''))
-    .then(replaceBy(/\s+/g, ' '))
-    .then((x: string) => x ? splitBySpaces(x) : []);
+    .then(replaceBy(/\s{2,}/g, '\n'))
+    .then((x: string) => x ? splitByLines(x) : []);
 
 export const getUsersExistServices: GetUsersExistServices = bash => reduceAsync(
     async (acc: string[], link: string) => {
