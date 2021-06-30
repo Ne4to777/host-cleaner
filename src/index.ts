@@ -6,3 +6,10 @@
 // getUsersAllArray(bash)().then(console.log);
 
 // getDismissedUsersPaths({host: 'market.logrus01ed.yandex.ru'}).then(console.log);
+import {readFileSync} from 'fs';
+
+try {
+    readFileSync('', 'utf8');
+} catch (err) {
+    console.log(err.code);
+}
