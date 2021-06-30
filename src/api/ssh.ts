@@ -26,7 +26,8 @@ export const connector: Connector = ({host}) => {
     const session = ssh.connect({
         host,
         username: USERNAME,
-        privateKey: PRIVATE_KEY_PATH
+        privateKey: PRIVATE_KEY_PATH,
+        readyTimeout: 60000,
     });
     return (command, folder = '/') => session
         .then(() => ssh.execCommand(command, {cwd: folder}))
@@ -96,7 +97,7 @@ export const getUsersExistServices: GetUsersExistServices = bash => reduceAsync(
 );
 
 export const getUsersAllArray: VoidToArrayAsync = bash => () => bash(
-    'find . -mindepth 1 -maxdepth 1 -type d',
+    'ls',
     usersPath
 )
     .then(splitByLines);
