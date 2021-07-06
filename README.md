@@ -19,7 +19,7 @@ npm i
 - <b>STAFF_AUTH_TOKEN</b> - токен для Стаффа
 
 ## Запуск
-По умолчанию режим прогона тасок (<code>mode</code>) выставлен в <code>fake</code>, чтоб не удалить ничего лишнего. Когда будете уверенны в своих намерениях, поменяйте на <code>real</code> (<b>src/configs/index.ts</b>)
+По умолчанию режим прогона тасок <code>mode</code> выставлен в <code>fake</code>, чтоб не удалить лишнего и не слать на почту. Когда будете уверенны в своих намерениях, поменяйте на <code>real</code> (<b>src/configs/index.ts</b>)
 - `npm run task:cleanOrphanedUsers` - удалить папки сервисов на которые нет симлинков из папки юзеров
 - `npm run task:cleanDismissedUsers` - удалить домашние папки уволенных сотрудников (после почистить сервисы)
 - `npm run task:cleanNodeModules` - удалить все node_modules в сервисах (<b>юзать только при всемирном потопе</b>)
