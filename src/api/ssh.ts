@@ -16,7 +16,7 @@ const {servicesPath, usersPath} = configs;
 
 dotenv.config({path: './.env'});
 
-const {USERNAME, PRIVATE_KEY_PATH} = process.env;
+const {USERNAME, PRIVATE_KEY_PATH, PASSPHRASE} = process.env;
 const ssh = new NodeSSH();
 
 type Connector = (params: {host:string}) => (command:string, folder:string) => Promise<any>
@@ -27,6 +27,7 @@ export const connector: Connector = ({host}) => {
         host,
         username: USERNAME,
         privateKey: PRIVATE_KEY_PATH,
+        passphrase: PASSPHRASE,
         readyTimeout: 60000,
     });
     return (command, folder = '/') => session

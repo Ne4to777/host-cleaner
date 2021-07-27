@@ -16,7 +16,8 @@ npm i
 
 <b>.env</b> (создать свой):
 - <b>PRIVATE_KEY_PATH</b> - путь ssh ключа (а-ля '/home/coolname/.ssh/id_rsa')
-- <b>STAFF_AUTH_TOKEN</b> - токен для Стаффа
+- <b>PASSPHRASE</b> - кодовая фраза для ssh (если есть)
+- <b>STAFF_AUTH_TOKEN</b> - токен для Стаффа (нужен только для рассылок)
 
 ## Запуск
 По умолчанию режим прогона тасок <code>mode</code> выставлен в <code>fake</code>, чтоб не удалить лишнего и не слать на почту. Когда будете уверенны в своих намерениях, поменяйте на <code>real</code> (<b>src/configs/index.ts</b>)
