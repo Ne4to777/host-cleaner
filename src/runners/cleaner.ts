@@ -23,23 +23,24 @@ export const cleaner: HostRunner = task => async host => {
     }
     console.log('Deleting...');
     const duBefore = await bashDiskUsage();
-    try {
-        await mapAsync(async (path:string) => {
+    await mapAsync(async (path: string) => {
+        try {
             await bashRemove(path, '/');
             const msg = `deleted: ${path}`;
             report.push(msg);
             console.log(msg);
-        })(paths);
-        report.push('DISK USAGE BEFORE:', duBefore);
-        report.push('DISK USAGE AFTER:', await bashDiskUsage());
-    } catch (err) {
-        report.push(err);
-    } finally {
-        try {
-            await write(report.join('\n'));
         } catch (err) {
-            console.log(err);
+            report.push(err);
         }
+    })(paths);
+
+    report.push('DISK USAGE BEFORE:', duBefore);
+    report.push('DISK USAGE AFTER:', await bashDiskUsage());
+
+    try {
+        await write(report.join('\n'));
+    } catch (err) {
+        console.log(err);
     }
     return undefined;
 };

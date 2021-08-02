@@ -22,9 +22,9 @@ export default ({
         subject: 'Не оставайся в стороне! Благо само себя не нанесет',
     },
     hosts: [
-        'market.logrus01ed.yandex.ru',
         'market.logrus01hd.yandex.ru',
+        'market.logrus01ed.yandex.ru',
         'market.logrus01vd.yandex.ru',
         'market.logrus02vd.yandex.ru',
-    ]
+    ],
 }) as Config;

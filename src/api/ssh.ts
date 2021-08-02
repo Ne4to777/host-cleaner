@@ -10,7 +10,7 @@ import type {
     GetServiceUserGitBranches
 } from '../helpers';
 import configs from '../configs';
-import {getServiceInfoMap} from '../helpers';
+import {getServiceInfoMap, GetUserServiceNodeModules} from '../helpers';
 
 const {servicesPath, usersPath} = configs;
 
@@ -64,12 +64,24 @@ export const getAllServicesArray: VoidToArrayAsync = bash => () => bash(
     .then(replaceBy(/\.\//g, `${servicesPath}/`))
     .then(splitByLines);
 
-export const getAllServiceNodeModules: VoidToArrayAsync = bash => () => bash(
+export const getAllServiceNodeModulesArray: VoidToArrayAsync = bash => () => bash(
     'find . -name node_modules -type d -maxdepth 3',
     servicesPath
 )
     .then(replaceBy(/\.\//g, `${servicesPath}/`))
     .then(splitByLines);
+
+export const getOldUserServicesArray: VoidToArrayAsync = bash => () => bash(
+    'find . -mindepth 2 -maxdepth 2 -type d -mtime +30',
+    servicesPath
+)
+    .then(replaceBy(/\.\//g, `${servicesPath}/`))
+    .then(splitByLines);
+
+export const getUserServiceNodeModulesPath: GetUserServiceNodeModules = bash => path => bash(
+    `find ${path} -maxdepth 1 -type d -name 'node_modules'`,
+    '/'
+);
 
 export const getAllServiceGitBranches: GetAllServiceGitBranches = bash => path => bash(
     'ls | cat | xargs -I % sh -c "cd %; git branch 2> /dev/null; cd .."',

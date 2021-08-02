@@ -24,6 +24,7 @@ npm i
 - `npm run task:cleanOrphanedUsers` - удалить папки сервисов на которые нет симлинков из папки юзеров
 - `npm run task:cleanDismissedUsers` - удалить домашние папки уволенных сотрудников (после почистить сервисы)
 - `npm run task:cleanNodeModules` - удалить все node_modules в сервисах (<b>юзать только при всемирном потопе</b>)
+- `npm run task:cleanOldNodeModules` - удалить node_modules в сервисах, старше 30-ти дней
 - `npm run task:mailToDoubledUsers` - разослать уведомления на почту с просьбой удалить задвоенные сервисы
 - `npm run task:mailAboutGitBranches` - разослать уведомления на почту с просьбой удалить ненужные git-ветки
 
