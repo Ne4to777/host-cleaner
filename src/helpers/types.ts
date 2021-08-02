@@ -5,6 +5,8 @@ export type GetUsersExistServices = (bash: (...xs:any) => any) => (usersSymlinks
 
 export type GetServicesInfo = (bash: (...xs:any) => any) => (path: string) => Promise<string[]>
 
+export type GetUserServiceNodeModules = (bash: (...xs:any) => any) => (path: string) => Promise<string>
+
 export type GetAllServiceGitBranches = (bash: any) => (path: string) => Promise<string[]>
 
 export type GetServiceUserGitBranches = (bash: any) => (path:string) => Promise<string[]>
