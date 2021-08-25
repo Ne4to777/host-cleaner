@@ -25,18 +25,11 @@ export const cleaner: HostRunner = task => async host => {
     const duBefore = await bashDiskUsage();
     await mapAsync(async (path: string) => {
         try {
-<<<<<<< HEAD
             process.stdout.write(`deleting: ${path}`);
             if (/\/~$/.test(path)) await bashRemove('*~*', path.split('/').slice(0, -1).join('/'));
             await bashRemove(path, '/');
             report.push(`deleted: ${path}`);
             process.stdout.write(' - done!\n');
-=======
-            await bashRemove(path, '/');
-            const msg = `deleted: ${path}`;
-            report.push(msg);
-            console.log(msg);
->>>>>>> 3e584d9c208215c22254b25706053465fb5ce122
         } catch (err) {
             report.push(err);
         }
