@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import {writeFileSync} from 'fs';
 
 // import {
@@ -9,6 +10,11 @@
 // } from './api';
 // import {getOldNodeModulesPaths} from './sniffers';
 // import {processExit0} from './utils';
+=======
+import {connector, getOldUserServicesArray, getUserServiceNodeModulesPath} from './api';
+import {getOldNodeModulesPaths} from './sniffers';
+import {processExit0} from './utils';
+>>>>>>> 3e584d9c208215c22254b25706053465fb5ce122
 
 // import {getDismissedUsersPaths} from './sniffers';
 //
@@ -23,6 +29,7 @@
 
 // getUserServiceNodeModulesPath(bash)('/var/lib/yandex/market-vendor-node-dev/kachesov-a')
 // .then(x => console.log(x ? 'hoho' : 'hehe'));
+<<<<<<< HEAD
 
 // @ts-ignore
 // eslint-disable-next-line no-undef
@@ -69,3 +76,5 @@
 //     .then(console.log);
 
 // removeRecByPath(bash)('*~*', '/home/nybble/~'.split('/').slice(0, -1).join('/')).then(() => processExit0());
+=======
+>>>>>>> 3e584d9c208215c22254b25706053465fb5ce122
