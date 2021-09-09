@@ -1,14 +1,16 @@
-import {connector, getOldUserServicesArray, getUserServiceNodeModulesPath} from '../api';
-import {mapAsync, pipe, T} from '../utils';
+import {connector, getUserServiceNodeModulesPath} from '../api';
+import {mapAsync, pipe, parallel, T, reduce} from '../utils';
 import type {Sniffer} from '../helpers';
+import {getOldServices} from './oldUserServices';
 
 export const getOldNodeModulesPaths: Sniffer = pipe([
-    connector,
-    bash => pipe([
-        getOldUserServicesArray,
-        T(),
-        mapAsync(getUserServiceNodeModulesPath(bash)),
+    parallel([
+        pipe([connector, getUserServiceNodeModulesPath, mapAsync]),
+        getOldServices,
+    ]),
+    T((mapServices: any) => pipe([
+        mapServices,
         Object.values,
-        xs => xs.filter(Boolean)
-    ])(bash)
+        reduce((acc, x: any) => acc.concat(x), [])
+    ]))
 ]);

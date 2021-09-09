@@ -10,7 +10,11 @@ import type {
     GetServiceUserGitBranches
 } from '../helpers';
 import configs from '../configs';
-import {getServiceInfoMap, GetUserServiceNodeModules} from '../helpers';
+import {
+    getServiceInfoMap,
+    GetUserServiceNodeModules,
+    GetUserServicesArrayNewerThen,
+} from '../helpers';
 
 const {servicesPath, usersPath} = configs;
 
@@ -65,23 +69,26 @@ export const getAllServicesArray: VoidToArrayAsync = bash => () => bash(
     .then(splitByLines);
 
 export const getAllServiceNodeModulesArray: VoidToArrayAsync = bash => () => bash(
-    'find . -name node_modules -type d -maxdepth 3',
-    servicesPath
-)
-    .then(replaceBy(/\.\//g, `${servicesPath}/`))
-    .then(splitByLines);
-
-export const getOldUserServicesArray: VoidToArrayAsync = bash => () => bash(
-    'find . -mindepth 2 -maxdepth 2 -type d -mtime +30',
+    'find . -maxdepth 3 -name node_modules -type d',
     servicesPath
 )
     .then(replaceBy(/\.\//g, `${servicesPath}/`))
     .then(splitByLines);
 
 export const getUserServiceNodeModulesPath: GetUserServiceNodeModules = bash => path => bash(
-    `find ${path} -maxdepth 1 -type d -name 'node_modules'`,
+    `find ${path} -type d -name 'node_modules' -prune`,
     '/'
-);
+)
+    .then(splitByLines)
+    .then((x: any) => x.filter(Boolean));
+
+export const getUserServicesArrayNewerThen: GetUserServicesArrayNewerThen = (n = 0) => bash => path => bash(
+    `find . ! -path '*/node_modules/*' ! -path '*/.git/*' -type f -mtime -${n}`,
+    path
+)
+    .then(replaceBy(/\.\//g, `${path}/`))
+    .then(splitByLines)
+    .then((x: any) => x.filter(Boolean));
 
 export const getAllServiceGitBranches: GetAllServiceGitBranches = bash => path => bash(
     'ls | cat | xargs -I % sh -c "cd %; git branch 2> /dev/null; cd .."',

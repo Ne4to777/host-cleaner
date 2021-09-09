@@ -63,6 +63,9 @@ export type AnyToAny4T = (...xs: any) => AnyToAny3T;
 type IType = <T>(x: T) => T
 export const I: IType = x => x;
 
+type CType = <T, K, N>(f: any) =>(y?: T) => (x?: K) => N
+export const C:CType = f => y => x => f(x)(y);
+
 type TType = <T, K>(x?: T) => (f:(_x?: T) => K) => K
 export const T:TType = x => f => f(x);
 
@@ -97,11 +100,11 @@ type ParallelReducer = <Arg>(
     f: (..._xs: Arg[]) => Promise<First>
 ) => Promise<Second>
 
-export const parallelReducer: ParallelReducer = (...xs) => async (acc, f) => acc(await f(...xs));
+export const parallelReducer: ParallelReducer = (...xs) => async (acc, f) => (await acc)(await f(...xs));
 
-type Parallel = (joiner: AnyToAnyT) => AnyToAny2T
+type Parallel = (fns: AnyToAnyT[]) => AnyToAny2T
 
-export const parallel: Parallel = joiner => fns => (...xs) => fns.reduce(parallelReducer(...xs), joiner);
+export const parallel: Parallel = fns => (...xs) => joiner => fns.reduce(parallelReducer(...xs), joiner);
 
 type Info = (msg: string) => <Arg>(x: Arg) => Arg
 export const info: Info = msg => x => {

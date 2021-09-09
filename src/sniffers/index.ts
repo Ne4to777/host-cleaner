@@ -3,4 +3,5 @@ export * from './dismissedUsers';
 export * from './doubledUsers';
 export * from './nodeModules';
 export * from './oldNodeModules';
+export * from './oldUserServices';
 export * from './gitBranches';

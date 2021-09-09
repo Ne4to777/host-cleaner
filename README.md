@@ -12,6 +12,7 @@ npm i
 <b>./src/configs</b>:
 - <b>servicesPath</b> - путь к сервисам на хосте (настроен для логрусов)
 - <b>usersPath</b> - пусть к юзерам на хосте (настроен для логрусов)
+- <b>daysExpired</b> - кол-во дней, после которых считать сервис устаревшим (по-умолчанию 30)
 - <b>hosts</b> - хосты (настроены для логрусов)
 
 <b>.env</b> (создать свой):
@@ -21,10 +22,11 @@ npm i
 
 ## Запуск
 По умолчанию режим прогона тасок <code>mode</code> выставлен в <code>fake</code>, чтоб не удалить лишнего и не слать на почту. Когда будете уверенны в своих намерениях, поменяйте на <code>real</code> (<b>src/configs/index.ts</b>)
-- `npm run task:cleanOrphanedUsers` - удалить папки сервисов на которые нет симлинков из папки юзеров
-- `npm run task:cleanDismissedUsers` - удалить домашние папки уволенных сотрудников (после почистить сервисы)
-- `npm run task:cleanNodeModules` - удалить все node_modules в сервисах (<b>юзать только при всемирном потопе</b>)
-- `npm run task:cleanOldNodeModules` - удалить node_modules в сервисах, старше 30-ти дней
+- `npm run task:cleanOrphanedUsers` - удалить папки сервисов на которые нет симлинков из папки юзеров (безопасно)
+- `npm run task:cleanDismissedUsers` - удалить домашние папки уволенных сотрудников (после почистить сервисы) (безопасно)
+- `npm run task:cleanOldNodeModules` - удалить node_modules в сервисах старше <b>daysExpired</b> дней (в крайнем случае)
+- `npm run task:cleanOldUserServices` - удалить все сервисы юзеров старше <b>daysExpired</b> дней (в крайнем случае)
+- `npm run task:cleanNodeModules` - удалить все node_modules в сервисах (<b>в крайнем случае</b>)
 - `npm run task:mailToDoubledUsers` - разослать уведомления на почту с просьбой удалить задвоенные сервисы
 - `npm run task:mailAboutGitBranches` - разослать уведомления на почту с просьбой удалить ненужные git-ветки
 

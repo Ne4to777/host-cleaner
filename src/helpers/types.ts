@@ -7,6 +7,8 @@ export type GetServicesInfo = (bash: (...xs:any) => any) => (path: string) => Pr
 
 export type GetUserServiceNodeModules = (bash: (...xs:any) => any) => (path: string) => Promise<string>
 
+export type GetUserServicesArrayNewerThen = (n:any) => (bash: (...xs:any) => any) => (path: string) => Promise<string>
+
 export type GetAllServiceGitBranches = (bash: any) => (path: string) => Promise<string[]>
 
 export type GetServiceUserGitBranches = (bash: any) => (path:string) => Promise<string[]>

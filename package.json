@@ -24,6 +24,7 @@
     "task:cleanOrphanedUsers": "npx ts-node src/tasks/cleanOrphanedUsers",
     "task:cleanNodeModules": "npx ts-node src/tasks/cleanNodeModules",
     "task:cleanOldNodeModules": "npx ts-node src/tasks/cleanOldNodeModules",
+    "task:cleanOldUserServices": "npx ts-node src/tasks/cleanOldUserServices",
     "task:mailToDoubledUsers": "npx ts-node src/tasks/mailToDoubledUsers",
     "task:mailAboutGitBranches": "npx ts-node src/tasks/mailAboutGitBranches"
   },

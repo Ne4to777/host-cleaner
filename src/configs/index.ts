@@ -8,6 +8,7 @@ export type Config = {
         from: string,
         subject: string
     },
+    daysExpired: number,
     hosts: string[]
 }
 
@@ -21,6 +22,7 @@ export default ({
         from: 'nybble@yandex-team.ru',
         subject: 'Не оставайся в стороне! Благо само себя не нанесет',
     },
+    daysExpired: 30,
     hosts: [
         'market.logrus01hd.yandex.ru',
         'market.logrus01ed.yandex.ru',
