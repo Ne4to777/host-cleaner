@@ -11,7 +11,7 @@ export const getOldServices: Sniffer = pipe([
     connector,
     parallel([
         getUserServicesArrayNewerThen(configs.daysExpired || Infinity),
-        pipe([C(getUsersAllServicesArray)(), xs => xs.splice(0, 5)]),
+        C(getUsersAllServicesArray)(),
     ]),
     T((getUserServices: any) => parallel([
         arrayToExistenceMap,
