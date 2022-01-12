@@ -18,7 +18,8 @@ export type HostsIterator = (runner: (host: string) => Promise<any>) => Promise<
 export type Task = {
     name: string,
     sniffer: Sniffer,
-    mailer?: (login:string, data: any) => string
+    mailer?: (login:string, data: any) => string,
+    config: Record<string, any>
 }
 
 export type RunnerWithParams = (x: any) => Promise<any>

@@ -8,13 +8,13 @@ import {
 } from '../utils';
 import {getEmailContent} from '../helpers/mailLayouts/gitBranchesLayout';
 
-const task = {
-    name: 'GitBranches',
-    sniffer: getGitBranches,
-    mailer: getEmailContent
-};
-
-pipe([
+export default pipe([
+    config => ({
+        name: 'GitBranches',
+        sniffer: getGitBranches,
+        mailer: getEmailContent,
+        config
+    }),
     info('TASK: Notify Users About Unused Git Branches'),
     _task => pipe([
         aggregator,
@@ -23,4 +23,4 @@ pipe([
     ])(_task),
     info('Task is done!'),
     processExit0
-])(task);
+]);

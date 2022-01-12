@@ -13,7 +13,7 @@ import {
 import {getUsersByIds, sendEmail} from '../api';
 import config from '../configs';
 
-const {email: {subject}, mode} = config;
+const {email: {subject}} = config;
 
 const report: string[] = [];
 const pushReport = (x: any) => {
@@ -47,7 +47,7 @@ export const mailer: Runner = task => pipe([
                         to: emailsMap[login]
                     }),
                     pipeSync([
-                        data => sendEmail(mode === 'real' ? data : {}),
+                        data => sendEmail(task.config.mode === 'real' ? data : {}),
                         catchAsync(pushReport),
                     ]),
                     pushReport

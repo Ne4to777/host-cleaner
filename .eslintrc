@@ -2,16 +2,16 @@
     "root": true,
     "parserOptions": {
         "sourceType": "module",
-        "ecmaFeatures": {
-            "ecmaVersion": 2020
-        },
         "impliedStrict": true
+    },
+    "env": {
+        "es2021": true
     },
     "globals": {
         "window": "readonly",
         "document": "readonly",
         "_require": "readonly",
-        "__non_webpack_require__": "readonly",
+        "__non_webpack_require__": "readonly"
     },
     "overrides": [
         {

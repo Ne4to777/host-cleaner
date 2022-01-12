@@ -2,12 +2,10 @@ import type {HostRunner} from '../helpers';
 import {reportWrite} from '../helpers';
 import {connector, getDiskUsage, removeRecByPath} from '../api';
 import {mapAsync, I} from '../utils';
-import config from '../configs';
-
-const {mode} = config;
 
 export const cleaner: HostRunner = task => async host => {
-    const {name, sniffer} = task;
+    const {name, sniffer, config} = task;
+    const {mode} = config;
     const report: string[] = [name, `HOST: ${host}`];
     const bash = connector({host});
     const bashDiskUsage = getDiskUsage(bash);
@@ -30,7 +28,7 @@ export const cleaner: HostRunner = task => async host => {
             await bashRemove(path, '/');
             report.push(`deleted: ${path}`);
             process.stdout.write(' - done!\n');
-        } catch (err) {
+        } catch (err: any) {
             report.push(err);
         }
     })(paths);

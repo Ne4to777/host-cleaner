@@ -1,5 +1,7 @@
 import {promises as fs} from 'fs';
 
+import defaultConfigs from '../configs';
+
 const flatClone = (x: any) => {
     if (isObject(x)) return {...x};
     if (isArray(x)) return [...x];
@@ -143,3 +145,5 @@ export const catchAsync: CatchAsync = f => x => x.catch(f);
 
 type Stringify = (x: any) => string
 export const stringify: Stringify = x => JSON.stringify(x, null, '    ');
+
+export const mergeConfigs = mergeFlat(defaultConfigs);

@@ -8,13 +8,13 @@ import {
 } from '../utils';
 import {getMailContent} from '../helpers/mailLayouts/doubledUsersLayout';
 
-const task = {
-    name: 'DoubledUsers',
-    sniffer: getDoubledUsersPaths,
-    mailer: getMailContent
-};
-
-pipe([
+export default pipe([
+    config => ({
+        name: 'DoubledUsers',
+        sniffer: getDoubledUsersPaths,
+        mailer: getMailContent,
+        config
+    }),
     info('TASK: Notify Users With Doubled Services'),
     _task => pipe([
         aggregator,
@@ -23,4 +23,4 @@ pipe([
     ])(_task),
     info('Task is done!'),
     processExit0
-])(task);
+]);
