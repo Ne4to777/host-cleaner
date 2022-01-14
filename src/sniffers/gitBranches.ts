@@ -1,18 +1,23 @@
-import {connector, getAllServicesArray, getServicesInfo, getServiceUserGitBranches} from '../api';
+import {getConnector, getAllServicesArray, getServicesInfo, getServiceUserGitBranches} from '../api';
 import type {Sniffer} from '../helpers';
-import {pipe, reduceAsync} from '../utils';
+import {pipe, parapipe, reduceAsync, para2} from '../utils';
 
-export const getGitBranches: Sniffer = pipe([
-    connector,
-    bash => pipe([
-        getAllServicesArray(bash),
-        reduceAsync((acc, path: string) => pipe([
-            getServicesInfo(bash),
+export const getGitBranches: Sniffer = parapipe(
+    getConnector,
+    para2(
+        getAllServicesArray,
+        getServicesInfo,
+        getServiceUserGitBranches
+    ),
+    () => ([bashAllServicesArray, bashServicesInfo, bashServiceUserGitBranches]) => pipe(
+        bashAllServicesArray,
+        reduceAsync((acc, path: string) => pipe(
+            bashServicesInfo,
             reduceAsync(async (_acc, {login, folderName}: any) => {
                 if (login === 'root') return _acc;
                 const serviceUserPath = `${path}/${folderName}`;
-                const branches = await getServiceUserGitBranches(bash)(serviceUserPath);
-                const branchesFiltered = branches.filter(x => x !== 'master');
+                const branches = await bashServiceUserGitBranches(serviceUserPath);
+                const branchesFiltered = branches.filter((x: string) => x !== 'master');
                 if (branchesFiltered.length) {
                     if (!_acc[login]) _acc[login] = {};
                     if (!_acc[login][path]) _acc[login][path] = {};
@@ -20,6 +25,6 @@ export const getGitBranches: Sniffer = pipe([
                 }
                 return _acc;
             }, acc)
-        ])(path), {} as any),
-    ])(),
-]);
+        )(path), {} as any),
+    )(),
+);

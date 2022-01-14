@@ -1,8 +1,7 @@
 import type {HostRunner} from '../helpers';
 import {info, pipe} from '../utils';
 
-export const aggregator: HostRunner = ({sniffer}) => pipe([
+export const aggregator: HostRunner = ({sniff}) => pipe(
     info('Gathering info...'),
-    host => ({host}),
-    sniffer,
-]);
+    sniff,
+);

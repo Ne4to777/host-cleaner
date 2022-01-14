@@ -1,16 +1,8 @@
 import {existsSync, promises as fs} from 'fs';
 
 import {mapAsync, info, pipe, reduce} from '../utils';
-import configs from '../configs';
 
-import type {
-    HostsIterator,
-    RunnerWithParams,
-    ReportWrite,
-    GetServiceInfoMap
-} from '.';
-
-const {hosts} = configs;
+import type {HostsIterator, ReportWrite, GetServiceInfoMap, GetTask} from '.';
 
 export type GetReportName = () => string
 export const getReportName: GetReportName = () => {
@@ -19,9 +11,9 @@ export const getReportName: GetReportName = () => {
         date.getHours()}_${date.getMinutes()}_${date.getSeconds()}`;
 };
 
-export const reportWrite: ReportWrite = ({task, folder}) => async content => {
+export const reportWrite: ReportWrite = ({name, folder}) => async content => {
     const reportsPath = './reports';
-    const taskPath = `${reportsPath}/${task.name}`;
+    const taskPath = `${reportsPath}/${name}`;
     const folderPath = `${taskPath}/${folder}`;
     if (!existsSync(reportsPath)) await fs.mkdir(reportsPath);
     if (!existsSync(taskPath)) await fs.mkdir(taskPath);
@@ -38,16 +30,20 @@ export const folderizeLastLeaf = reduce((acc: any, path: string) => {
     return acc;
 }, {});
 
-export const hostsIterator: HostsIterator = (runner: RunnerWithParams) =>
-    mapAsync((host:string) => pipe([
-        info(`HOST: ${host}`),
-        runner
-    ])(host)
-        .catch(info(`FAILED ITERATION ON HOST: ${host}`))
-    )(hosts)
-        .then(info('ALL HOSTS ARE ITERATED!'));
+export const hostsIterator: HostsIterator = ({configs, run}) => pipe(
+    mapAsync(pipe(
+        host => info(`HOST: ${host}`)(host),
+        host => run(host).catch(info(`FAILED ITERATION ON HOST: ${host}`))
+    )),
+    info('ALL HOSTS ARE ITERATED!')
+)(configs.hosts);
 
 export const getServiceInfoMap: GetServiceInfoMap = xs => ({
     login: xs[2],
     folderName: xs[8].replace(/\/$/, '')
+});
+
+export const getTask: GetTask = ({runner, sniffer, ...rest}) => ({
+    run: runner({sniff: sniffer(rest.configs), ...rest}),
+    ...rest
 });

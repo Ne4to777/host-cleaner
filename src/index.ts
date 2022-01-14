@@ -1,18 +1,33 @@
-// import {
-//     connector, get,
-//     getAllDismissedUsers,
-//     getQuery,
-//     getRequest,
-//     getUserServiceNodeModulesPath, removeRecByPath
-// } from './api';
-// import {getOldNodeModulesPaths, getOldServices} from './sniffers';
-// import {processExit0} from './utils';
+import {
+    get,
+    getAllDismissedUsers,
+    getQuery,
+    getRequest,
+    getUserServiceNodeModulesPath,
+    removeRecByPath
+} from './api';
+import {
+    getDismissedUsersPaths,
+    getDoubledUsersPaths,
+    getGitBranches, getNodeModulesPaths,
+    getOldNodeModulesPaths,
+    getOldServices, getOrphanedUsersPaths
+} from './sniffers';
+import {log, log2, para, para2, parapipe, processExit0} from './utils';
+import configs from './configs';
 //
 // const bash = connector({host: 'market.logrus01ed.yandex.ru'});
 // getServiceUserGitBranches(bash)('/var/lib/yandex/market-front-node-dev/naygeborin').then(console.log);
 // getUsersAllArray(bash)().then(console.log);
+console.log('\n');
 
-// getOldServices({host: 'market.logrus01ed.yandex.ru'}).then(console.log);
+// getDismissedUsersPaths(configs)('market.logrus01ed.yandex.ru').then(console.log);
+// getDoubledUsersPaths(configs)('market.logrus01ed.yandex.ru').then(console.log);
+// getGitBranches(configs)('market.logrus01ed.yandex.ru').then(console.log);
+// getNodeModulesPaths(configs)('market.logrus01ed.yandex.ru').then(console.log);
+// getOldNodeModulesPaths(configs)('market.logrus01ed.yandex.ru').then(console.log);
+// getOldServices(configs)('market.logrus01ed.yandex.ru').then(console.log);
+// getOrphanedUsersPaths(configs)('market.logrus01ed.yandex.ru').then(console.log);
 
 // getOldNodeModulesPaths({host: 'market.logrus01ed.yandex.ru'}).then(console.log);
 

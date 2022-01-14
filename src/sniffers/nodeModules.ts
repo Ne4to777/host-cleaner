@@ -1,9 +1,9 @@
-import {connector, getAllServiceNodeModulesArray} from '../api';
-import {pipe, T} from '../utils';
+import {getConnector, getAllServiceNodeModulesArray} from '../api';
+import {parapipe, T} from '../utils';
 import type {Sniffer} from '../helpers';
 
-export const getNodeModulesPaths: Sniffer = pipe([
-    connector,
+export const getNodeModulesPaths: Sniffer = parapipe(
+    getConnector,
     getAllServiceNodeModulesArray,
-    T(),
-]);
+    T,
+);

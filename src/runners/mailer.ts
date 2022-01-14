@@ -1,19 +1,6 @@
 import {reportWrite, Runner} from '../helpers';
-import {
-    info,
-    mapAsync,
-    mapifyArray,
-    pipe,
-    pipeSync,
-    reduce,
-    T,
-    catchAsync,
-    stringify,
-} from '../utils';
+import {info, mapAsync, mapifyArray, pipe, pipeSync, reduce, T, catchAsync, stringify} from '../utils';
 import {getUsersByIds, sendEmail} from '../api';
-import config from '../configs';
-
-const {email: {subject}} = config;
 
 const report: string[] = [];
 const pushReport = (x: any) => {
@@ -21,7 +8,7 @@ const pushReport = (x: any) => {
     return x;
 };
 
-export const mailer: Runner = task => pipe([
+export const mailer: Runner = ({name, configs, formatter}) => pipe(
     Object.entries,
     reduce(
         (acc, [host, loginsMap]: any[]) => reduce(
@@ -33,29 +20,29 @@ export const mailer: Runner = task => pipe([
         )(Object.entries(loginsMap)), {} as Record<string, any>
     ),
     pushReport,
-    dataMap => pipe([
+    dataMap => pipe(
         Object.keys,
-        logins => pipe([
+        logins => pipe(
             getUsersByIds,
             mapifyArray('login', 'work_email'),
             info(`EMAILS TO SEND: ${logins.length}`),
-            pipe([
-                emailsMap => pipe([
+            pipe(
+                emailsMap => pipe(
                     (login: string) => ({
-                        subject,
-                        text: task.mailer ? task.mailer(login, dataMap[login]) : '',
+                        subject: configs.email.subject,
+                        text: formatter(login, dataMap[login]),
                         to: emailsMap[login]
                     }),
-                    pipeSync([
-                        data => sendEmail(task.config.mode === 'real' ? data : {}),
+                    pipeSync(
+                        data => sendEmail(configs.mode === 'real' ? data : {}),
                         catchAsync(pushReport),
-                    ]),
+                    ),
                     pushReport
-                ]),
+                ),
                 mapAsync,
                 T(logins),
-            ]),
-        ])(logins)
-    ])(dataMap),
-    () => reportWrite({task, folder: 'email'})(report.join('\n')),
-]);
+            ),
+        )(logins)
+    )(dataMap),
+    () => reportWrite({name, folder: 'email'})(report.join('\n')),
+);

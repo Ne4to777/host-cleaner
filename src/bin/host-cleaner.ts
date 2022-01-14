@@ -1,19 +1,21 @@
 #!/usr/bin/env node
 import yargs from 'yargs';
 
-import {mergeConfigs, pipe} from '../utils';
+import {mergeConfigs, NULL, pipe} from '../utils';
 import defaultConfigs from '../configs';
-import cleanDismissedUsers from '../tasks/cleanDismissedUsers';
-import cleanOrphanedUsers from '../tasks/cleanOrphanedUsers';
-import cleanNodeModules from '../tasks/cleanNodeModules';
-import cleanOldNodeModules from '../tasks/cleanOldNodeModules';
-import cleanOldUserServices from '../tasks/cleanOldUserServices';
-import mailAboutGitBranches from '../tasks/mailAboutGitBranches';
-import mailToDoubledUsers from '../tasks/mailToDoubledUsers';
+import {
+    cleanDismissedUsers,
+    cleanOrphanedUsers,
+    cleanNodeModules,
+    cleanOldNodeModules,
+    cleanOldUserServices,
+    mailAboutGitBranches,
+    mailToDoubledUsers
+} from '../tasks';
 
-const withConfigs = (f: (x: any) => any) => pipe([mergeConfigs, f]);
+const withConfigs = (f: (x: any) => any) => pipe(mergeConfigs, f);
 
-export default yargs(process.argv.slice(2))
+(() => yargs(process.argv.slice(2))
     .usage('Usage: $0 <command> [options]')
     .option('mode', {
         type: 'string',
@@ -21,12 +23,19 @@ export default yargs(process.argv.slice(2))
         alias: 'm',
         describe: 'execution mode',
     })
-    .command('cleanDismissedUsers', 'Clean Dismissed Users Task', () => null, withConfigs(cleanDismissedUsers))
-    .command('cleanOrphanedUsers', 'Clean Orphaned Users Task', () => null, withConfigs(cleanOrphanedUsers))
-    .command('cleanNodeModules', 'Clean Node Modules Task', () => null, withConfigs(cleanNodeModules))
-    .command('cleanOldNodeModules', 'Clean Old Node Modules Task', () => null, withConfigs(cleanOldNodeModules))
-    .command('cleanOldUserServices', 'Clean Old User Services Task', () => null, withConfigs(cleanOldUserServices))
-    .command('mailAboutGitBranches', 'Mail About Git Branches Task', () => null, withConfigs(mailAboutGitBranches))
-    .command('mailToDoubledUsers', 'Mail To Doubled Users Task', () => null, withConfigs(mailToDoubledUsers))
+    .option('ssh', {
+        type: 'boolean',
+        default: defaultConfigs.ssh,
+        alias: 's',
+        describe: 'need ssh',
+    })
+    .command('cleanDismissedUsers', 'Clean Dismissed Users Task', NULL, withConfigs(cleanDismissedUsers))
+    .command('cleanOrphanedUsers', 'Clean Orphaned Users Task', NULL, withConfigs(cleanOrphanedUsers))
+    .command('cleanNodeModules', 'Clean Node Modules Task', NULL, withConfigs(cleanNodeModules))
+    .command('cleanOldNodeModules', 'Clean Old Node Modules Task', NULL, withConfigs(cleanOldNodeModules))
+    .command('cleanOldUserServices', 'Clean Old User Services Task', NULL, withConfigs(cleanOldUserServices))
+    .command('mailAboutGitBranches', 'Mail About Git Branches Task', NULL, withConfigs(mailAboutGitBranches))
+    .command('mailToDoubledUsers', 'Mail To Doubled Users Task', NULL, withConfigs(mailToDoubledUsers))
     .help()
-    .argv;
+    .argv
+)();

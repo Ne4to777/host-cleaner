@@ -1,19 +1,18 @@
 import type {HostRunner} from '../helpers';
 import {reportWrite} from '../helpers';
-import {connector, getDiskUsage, removeRecByPath} from '../api';
+import {getDiskUsage, removeRecByPath, getConnector} from '../api';
 import {mapAsync, I} from '../utils';
 
-export const cleaner: HostRunner = task => async host => {
-    const {name, sniffer, config} = task;
-    const {mode} = config;
+export const cleaner: HostRunner = ({sniff, name, configs}) => async host => {
+    const {mode} = configs;
     const report: string[] = [name, `HOST: ${host}`];
-    const bash = connector({host});
+    const bash = getConnector(host);
     const bashDiskUsage = getDiskUsage(bash);
     const bashRemove = mode === 'real' ? removeRecByPath(bash) : I;
     console.log('Gathering paths...');
-    const write = reportWrite({task, folder: host});
+    const write = reportWrite({name, folder: host});
     try {
-        const paths = await sniffer({host});
+        const paths = await sniff(host);
         if (!paths.length) {
             const nothingMsg = 'nothing to delete';
             console.log(nothingMsg);

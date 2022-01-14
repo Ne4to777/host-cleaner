@@ -1,5 +1,6 @@
 export type Config = {
     mode: 'real' | 'fake',
+    ssh: boolean
     servicesPath: string,
     usersPath: string,
     email: {
@@ -14,6 +15,7 @@ export type Config = {
 
 export default ({
     mode: 'fake',
+    ssh: true,
     servicesPath: '/var/lib/yandex',
     usersPath: '/home',
     email: {

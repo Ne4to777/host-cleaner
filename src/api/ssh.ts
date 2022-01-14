@@ -1,31 +1,26 @@
+import {promisify} from 'util';
+import {exec} from 'child_process';
+
 import * as dotenv from 'dotenv';
 import {NodeSSH} from 'node-ssh';
 
 import {reduceAsync, replaceBy, splitByLines, splitBySpaces} from '../utils';
-import type {
-    GetUsersExistServices,
-    VoidToArrayAsync,
-    GetServicesInfo,
-    GetAllServiceGitBranches,
-    GetServiceUserGitBranches
-} from '../helpers';
-import configs from '../configs';
 import {
     getServiceInfoMap,
-    GetUserServiceNodeModules,
     GetUserServicesArrayNewerThen,
 } from '../helpers';
 
-const {servicesPath, usersPath} = configs;
-
+const run = promisify(exec);
 dotenv.config({path: './.env'});
 
 const {USERNAME, PRIVATE_KEY_PATH, PASSPHRASE} = process.env;
+
 const ssh = new NodeSSH();
 
-type Connector = (params: {host:string}) => (command:string, folder:string) => Promise<any>
+type ConnectorSSH = (host: string) => (command:string, folder:string) => Promise<any>
+type ConnectorNode = () => (command:string, folder:string) => Promise<any>
 
-export const connector: Connector = ({host}) => {
+export const connectorSSH: ConnectorSSH = host => {
     if (!host) throw new Error('SSH host is missed');
     const session = ssh.connect({
         host,
@@ -36,8 +31,14 @@ export const connector: Connector = ({host}) => {
     });
     return (command, folder = '/') => session
         .then(() => ssh.execCommand(command, {cwd: folder}))
-        .then(result => result.stdout);
+        .then(({stdout}) => stdout);
 };
+
+export const connectorNode: ConnectorNode = () => (command, folder = '/') => run(command, {cwd: folder})
+    .then(({stdout}) => stdout);
+
+type GetConnector = (configs: any) => (host: any) => any
+export const getConnector: GetConnector = configs => configs.ssh ? connectorSSH : connectorNode;
 
 export type GetSymlinkAbsPath = (bash: (...xs:any) => any) => (link:string, dir:string) => Promise<string>
 export const getSymlinkAbsPath: GetSymlinkAbsPath = bash => (link, dir) => bash(`readlink ${link}`, dir);
@@ -48,49 +49,50 @@ export const removeRecByPath: RemoveRecByPath = bash => (path, dir) => bash(`sud
 export type GetDiskUsage = (bash: (...xs:any) => any) => () => Promise<string>
 export const getDiskUsage: GetDiskUsage = bash => () => bash('df -h', '/');
 
-export const getUsersSymlinksArray: VoidToArrayAsync = bash => () => bash(
+export type ExecBash = (configs: any) => (bash: (...xs:any) => any) => (param: any) => Promise<any>
+export const getUsersSymlinksArray: ExecBash = ({usersPath}) => bash => () => bash(
     'find . -mindepth 2 -maxdepth 2 -regex ".+_.+" -type l',
     usersPath
 )
     .then(splitByLines);
 
-export const getUsersAllServicesArray: VoidToArrayAsync = bash => () => bash(
+export const getUsersAllServicesArray: ExecBash = ({servicesPath}) => bash => () => bash(
     'find . -mindepth 2 -maxdepth 2 -type d',
     servicesPath
 )
     .then(replaceBy(/\.\//g, `${servicesPath}/`))
     .then(splitByLines);
 
-export const getAllServicesArray: VoidToArrayAsync = bash => () => bash(
+export const getAllServicesArray: ExecBash = ({servicesPath}) => bash => () => bash(
     'find . -mindepth 1 -maxdepth 1 -type d',
     servicesPath
 )
     .then(replaceBy(/\.\//g, `${servicesPath}/`))
     .then(splitByLines);
 
-export const getAllServiceNodeModulesArray: VoidToArrayAsync = bash => () => bash(
+export const getAllServiceNodeModulesArray: ExecBash = ({servicesPath}) => bash => () => bash(
     'find . -maxdepth 3 -name node_modules -type d',
     servicesPath
 )
     .then(replaceBy(/\.\//g, `${servicesPath}/`))
     .then(splitByLines);
 
-export const getUserServiceNodeModulesPath: GetUserServiceNodeModules = bash => path => bash(
+export const getUserServiceNodeModulesPath: ExecBash = () => bash => path => bash(
     `find ${path} -type d -name 'node_modules' -prune`,
     '/'
 )
     .then(splitByLines)
     .then((x: any) => x.filter(Boolean));
 
-export const getUserServicesArrayNewerThen: GetUserServicesArrayNewerThen = (n = 0) => bash => path => bash(
-    `find . ! -path '*/node_modules/*' ! -path '*/.git/*' -type f -mtime -${n}`,
+export const getUserServicesArrayNewerThen: GetUserServicesArrayNewerThen = ({daysExpired}) => bash => path => bash(
+    `find . ! -path '*/node_modules/*' ! -path '*/.git/*' -type f -mtime -${daysExpired || Infinity}`,
     path
 )
     .then(replaceBy(/\.\//g, `${path}/`))
     .then(splitByLines)
     .then((x: any) => x.filter(Boolean));
 
-export const getAllServiceGitBranches: GetAllServiceGitBranches = bash => path => bash(
+export const getAllServiceGitBranches: ExecBash = () => bash => path => bash(
     'ls | cat | xargs -I % sh -c "cd %; git branch 2> /dev/null; cd .."',
     path
 )
@@ -99,7 +101,7 @@ export const getAllServiceGitBranches: GetAllServiceGitBranches = bash => path =
     .then(replaceBy(/\s/g, '\n'))
     .then(splitBySpaces);
 
-export const getServiceUserGitBranches: GetServiceUserGitBranches = bash => path => bash(
+export const getServiceUserGitBranches: ExecBash = () => bash => path => bash(
     'git branch 2> /dev/null',
     path
 )
@@ -108,7 +110,7 @@ export const getServiceUserGitBranches: GetServiceUserGitBranches = bash => path
     .then(replaceBy(/\s{2,}/g, '\n'))
     .then((x: string) => x ? splitByLines(x) : []);
 
-export const getUsersExistServices: GetUsersExistServices = bash => reduceAsync(
+export const getUsersExistServices: ExecBash = ({usersPath}) => bash => reduceAsync(
     async (acc: string[], link: string) => {
         const symlinkAbsPath = await getSymlinkAbsPath(bash)(link, usersPath);
         if (symlinkAbsPath) return acc.concat(symlinkAbsPath);
@@ -116,13 +118,13 @@ export const getUsersExistServices: GetUsersExistServices = bash => reduceAsync(
     }, []
 );
 
-export const getUsersAllArray: VoidToArrayAsync = bash => () => bash(
+export const getUsersAllArray: ExecBash = ({usersPath}) => bash => () => bash(
     'ls',
     usersPath
 )
     .then(splitByLines);
 
-export const getServicesInfo: GetServicesInfo = bash => path => bash(
+export const getServicesInfo: ExecBash = () => bash => path => bash(
     'ls -ld */',
     path
 )

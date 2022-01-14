@@ -1,21 +1,22 @@
-import {connector, getUsersAllServicesArray, getUsersExistServices, getUsersSymlinksArray} from '../api';
-import {arrayToExistenceMap, excludeFromMap, pipe} from '../utils';
+import {getConnector, getUsersAllServicesArray, getUsersExistServices, getUsersSymlinksArray} from '../api';
+import {arrayToExistenceMap, excludeFromMap, para, para2, parapipe, pipe} from '../utils';
 import type {Sniffer} from '../helpers';
 
-export const getOrphanedUsersPaths: Sniffer = pipe([
-    connector,
-    bash => pipe([
-        getUsersAllServicesArray(bash),
-        arrayToExistenceMap,
-        excludeFromMap,
-        excludeFromServices => pipe([
-            getUsersExistServices,
-            bashUsersExistServices => pipe([
-                getUsersSymlinksArray(bash),
-                bashUsersExistServices,
-            ])(),
-            excludeFromServices,
-        ])(bash),
-    ])(),
-    Object.keys,
-]);
+export const getOrphanedUsersPaths: Sniffer = parapipe(
+    getConnector,
+    para2(getUsersExistServices, getUsersAllServicesArray, getUsersSymlinksArray),
+    () => ([bashUsersExistServices, bashUsersAllServicesArray, bashUsersSymlinksArray]) => pipe(
+        para(
+            pipe(
+                bashUsersAllServicesArray,
+                arrayToExistenceMap
+            ),
+            pipe(
+                bashUsersSymlinksArray,
+                bashUsersExistServices
+            )
+        ),
+        ([existenceMap, usersExistServices]) => excludeFromMap(existenceMap)(usersExistServices),
+        Object.keys
+    )(),
+);

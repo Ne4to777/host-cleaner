@@ -1,17 +1,17 @@
 import {getOrphanedUsersPaths} from '../sniffers';
 import {cleaner} from '../runners';
-import {hostsIterator} from '../helpers';
+import {getTask, hostsIterator} from '../helpers';
 import {pipe, info, processExit0} from '../utils';
 
-export default pipe([
-    config => ({
+export default pipe(
+    info('TASK: Remove Orphaned User Services'),
+    configs => getTask({
         name: 'OrphanedUsers',
         sniffer: getOrphanedUsersPaths,
-        config
+        runner: cleaner,
+        configs
     }),
-    info('TASK: Remove Orphaned User Services'),
-    cleaner,
     hostsIterator,
     info('Task is done!'),
     processExit0
-]);
+);

@@ -8,7 +8,7 @@
     "build:ts": "npm run remove:dist && npx tsc --build tsconfig.release.json",
     "build:files": "cp package.json package-lock.json README.md .npmrc .npmignore dist/",
     "start": "node -r esbuild-runner/register src/bin/host-cleaner.ts",
-    "watch": "npx nodemon -q -w 'src/**' -e 'ts,json' -x 'node -r esbuild-runner/register src/bin/host-cleaner.ts'",
+    "watch": "npx nodemon -q -w 'src/**' -e 'ts,json' -x 'node -r esbuild-runner/register src/index.ts'",
     "lint": "npx eslint --ext .ts src/",
     "lint:fix": "npm run lint -- --fix",
     "lint:typescript": "npx tsc --build tsconfig.lint.json",

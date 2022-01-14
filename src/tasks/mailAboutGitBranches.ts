@@ -1,26 +1,23 @@
 import {getGitBranches} from '../sniffers';
 import {aggregator, mailer} from '../runners';
-import {hostsIterator} from '../helpers';
-import {
-    info,
-    pipe,
-    processExit0,
-} from '../utils';
+import {getTask, hostsIterator} from '../helpers';
+import {info, para, pipe, processExit0} from '../utils';
 import {getEmailContent} from '../helpers/mailLayouts/gitBranchesLayout';
 
-export default pipe([
-    config => ({
+export default pipe(
+    info('TASK: Notify Users About Unused Git Branches'),
+    configs => getTask({
         name: 'GitBranches',
         sniffer: getGitBranches,
-        mailer: getEmailContent,
-        config
+        runner: aggregator,
+        formatter: getEmailContent,
+        configs
     }),
-    info('TASK: Notify Users About Unused Git Branches'),
-    _task => pipe([
-        aggregator,
-        hostsIterator,
-        mailer(_task),
-    ])(_task),
+    para(
+        mailer,
+        hostsIterator
+    ),
+    ([sendMail, data]) => sendMail(data),
     info('Task is done!'),
     processExit0
-]);
+);
