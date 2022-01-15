@@ -6,7 +6,7 @@ import {mapAsync, I} from '../utils';
 export const cleaner: HostRunner = ({sniff, name, configs}) => async host => {
     const {mode} = configs;
     const report: string[] = [name, `HOST: ${host}`];
-    const bash = getConnector(host);
+    const bash = getConnector(configs)(host);
     const bashDiskUsage = getDiskUsage(bash);
     const bashRemove = mode === 'real' ? removeRecByPath(bash) : I;
     console.log('Gathering paths...');

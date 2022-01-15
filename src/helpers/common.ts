@@ -1,24 +1,13 @@
-import {existsSync, promises as fs} from 'fs';
+import {existsSync, mkdirSync, promises as fs} from 'fs';
 
-import {mapAsync, info, pipe, reduce} from '../utils';
+import {mapAsync, info, pipe, reduce, getUniqueFilename} from '../utils';
 
 import type {HostsIterator, ReportWrite, GetServiceInfoMap, GetTask} from '.';
 
-export type GetReportName = () => string
-export const getReportName: GetReportName = () => {
-    const date = new Date();
-    return `${date.getDate()}_${date.getMonth() + 1}_${date.getFullYear()}__${
-        date.getHours()}_${date.getMinutes()}_${date.getSeconds()}`;
-};
-
 export const reportWrite: ReportWrite = ({name, folder}) => async content => {
-    const reportsPath = './reports';
-    const taskPath = `${reportsPath}/${name}`;
-    const folderPath = `${taskPath}/${folder}`;
-    if (!existsSync(reportsPath)) await fs.mkdir(reportsPath);
-    if (!existsSync(taskPath)) await fs.mkdir(taskPath);
-    if (!existsSync(folderPath)) await fs.mkdir(folderPath);
-    return fs.writeFile(`${folderPath}/${getReportName()}.txt`, content, 'utf8');
+    const folderPath = `./reports/${name}/${folder}`;
+    if (!existsSync(folderPath)) mkdirSync(folderPath, {recursive: true});
+    return fs.writeFile(`${folderPath}/${getUniqueFilename()}.txt`, content, 'utf8');
 };
 
 export const folderizeLastLeaf = reduce((acc: any, path: string) => {

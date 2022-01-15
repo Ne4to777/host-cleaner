@@ -1,6 +1,13 @@
-import {promises as fs} from 'fs';
+import {appendFileSync, existsSync, mkdirSync} from 'fs';
 
 import defaultConfigs from '../configs';
+
+export type GetUniqueFilename = () => string
+export const getUniqueFilename: GetUniqueFilename = () => {
+    const date = new Date();
+    return `${date.getDate()}_${date.getMonth() + 1}_${date.getFullYear()}__${
+        date.getHours()}_${date.getMinutes()}_${date.getSeconds()}`;
+};
 
 const flatClone = (x: any) => {
     if (isObject(x)) return {...x};
@@ -49,7 +56,12 @@ export const arrayToExistenceMap: ArrayToExistenceMap = xs => xs.reduce((acc, x)
 }, {});
 
 export type SplitByLines = (x: string) => string[]
-export const splitByLines: SplitByLines = x => x.split('\n');
+export const splitByLines: SplitByLines = x => x
+    .replace(/(\n)+/g, '\n')
+    .replace(/^\n/, '')
+    .replace(/\n$/, '')
+    .split('\n');
+
 export type SplitBySpaces = (x: string) => string[]
 export const splitBySpaces: SplitBySpaces = x => x.split(' ');
 export type ReplaceBy = (re: RegExp, to: string) => (x: string) => string
@@ -60,7 +72,6 @@ export const localCompare = Function.prototype.call.bind(String.prototype.locale
 export type AnyToAnyT = (...xs: any) => any;
 export type AnyToAny2T = (...xs: any) => AnyToAnyT;
 export type AnyToAny3T = (...xs: any) => AnyToAny2T;
-export type AnyToAny4T = (...xs: any) => AnyToAny3T;
 
 type IType = <T>(x: T) => T
 export const I: IType = x => x;
@@ -68,10 +79,10 @@ export const I: IType = x => x;
 type KType = <T>(x: T) => (y:void) => T
 export const K: KType = x => () => x;
 
-type CType = <T, K, N>(f: any) =>(y?: T) => (x?: K) => N
+type CType = <T, L, N>(f: any) =>(y?: T) => (x?: L) => N
 export const C:CType = f => y => x => f(x)(y);
 
-type TType = <T, K>(x?: T) => (f:(_x?: T) => K) => K
+type TType = <T, L>(x?: T) => (f:(_x?: T) => L) => L
 export const T:TType = x => f => f(x);
 
 type Info = (msg: string) => <Arg>(x: Arg) => Arg
@@ -107,11 +118,22 @@ export const isArray: IsArray = x => typeOf(x) === 'array';
 type MergeFlat = <O1, O2>(o1: Record<string, O1>)=>(o2: Record<string, O2>) => Record<string, O1|O2>
 export const mergeFlat:MergeFlat = o1 => o2 => ({...o1, ...o2});
 
-type DebugToFile = <Arg>(data: Arg) => Promise<Arg>
-export const debugToFile: DebugToFile = async data => {
-    await fs.writeFile('reports/debug.txt', JSON.stringify(data, null, '    '), 'utf8');
+type DebugToFile = <Arg>(path: string) => (data: Arg) => Arg
+export const debugToFile: DebugToFile = path => data => {
+    const folderPath = `debug/${path}`;
+    if (!existsSync(folderPath)) mkdirSync(folderPath, {recursive: true});
+    appendFileSync(`${folderPath}/logs.txt`, `${data}\n`, 'utf8');
     return data;
 };
+type DebugCommandsToFile = <G, F>(command: G, folder: F, host: string) => any
+export const debugCommandsToFile: DebugCommandsToFile = (
+    command,
+    folder,
+    host
+) => debugToFile(`commands/${host}`)(`command: '${command}' in '${folder}'`);
+
+type LogToFile = (data: any) => any
+export const logToFile: LogToFile = data => debugToFile('temp')(JSON.stringify(data, null, '    '));
 
 type CatchAsync = <Arg>(f: (err: any) => any) => (x: Promise<Arg>) => Promise<Arg>
 export const catchAsync: CatchAsync = f => x => x.catch(f);

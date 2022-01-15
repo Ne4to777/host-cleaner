@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import {rmdirSync} from 'fs';
+
 import yargs from 'yargs';
 
 import {mergeConfigs, NULL, pipe} from '../utils';
@@ -15,6 +17,12 @@ import {
 
 const withConfigs = (f: (x: any) => any) => pipe(mergeConfigs, f);
 
+try {
+    rmdirSync(`${process.cwd()}/debug`, {recursive: true});
+} catch (err) {
+    // empty
+}
+
 (() => yargs(process.argv.slice(2))
     .usage('Usage: $0 <command> [options]')
     .option('mode', {
@@ -28,6 +36,12 @@ const withConfigs = (f: (x: any) => any) => pipe(mergeConfigs, f);
         default: defaultConfigs.ssh,
         alias: 's',
         describe: 'need ssh',
+    })
+    .option('debug-commands', {
+        type: 'boolean',
+        default: defaultConfigs.debugCommands,
+        alias: 'c',
+        describe: 'debug commands to file',
     })
     .option('hosts', {
         type: 'array',

@@ -4,11 +4,8 @@ import {exec} from 'child_process';
 import * as dotenv from 'dotenv';
 import {NodeSSH} from 'node-ssh';
 
-import {reduceAsync, replaceBy, splitByLines, splitBySpaces} from '../utils';
-import {
-    getServiceInfoMap,
-    GetUserServicesArrayNewerThen,
-} from '../helpers';
+import {debugCommandsToFile, debugToFile, reduceAsync, replaceBy, splitByLines, splitBySpaces} from '../utils';
+import {getServiceInfoMap, GetUserServicesArrayNewerThen} from '../helpers';
 
 const run = promisify(exec);
 dotenv.config({path: './.env'});
@@ -17,10 +14,10 @@ const {USERNAME, PRIVATE_KEY_PATH, PASSPHRASE} = process.env;
 
 const ssh = new NodeSSH();
 
-type ConnectorSSH = (host: string) => (command:string, folder:string) => Promise<any>
-type ConnectorNode = () => (command:string, folder:string) => Promise<any>
+type ConnectorSSH = (configs: any) => (host: string) => (command:string, folder:string) => Promise<any>
+type ConnectorNode = (configs: any) => (host: string) =>(command:string, folder:string) => Promise<any>
 
-export const connectorSSH: ConnectorSSH = host => {
+export const connectorSSH: ConnectorSSH = ({debugCommands}) => host => {
     if (!host) throw new Error('SSH host is missed');
     const session = ssh.connect({
         host,
@@ -30,18 +27,22 @@ export const connectorSSH: ConnectorSSH = host => {
         readyTimeout: 60000,
     });
     return (command, folder = '/') => session
+        .then(() => debugCommands && debugCommandsToFile(command, folder, host))
         .then(() => ssh.execCommand(command, {cwd: folder}))
         .then(({stdout}) => stdout);
 };
 
-export const connectorNode: ConnectorNode = () => (command, folder = '/') => run(command, {cwd: folder})
-    .then(({stdout}) => stdout);
+export const connectorNode: ConnectorNode = ({debugCommands}) => host => (command, folder = '/') => {
+    if (debugCommands) debugCommandsToFile(command, folder, host);
+    return run(command, {cwd: folder}).then(({stdout}) => stdout);
+};
 
 type GetConnector = (configs: any) => (host: any) => any
-export const getConnector: GetConnector = configs => configs.ssh ? connectorSSH : connectorNode;
+export const getConnector: GetConnector = configs => configs.ssh ? connectorSSH(configs) : connectorNode(configs);
 
 export type GetSymlinkAbsPath = (bash: (...xs:any) => any) => (link:string, dir:string) => Promise<string>
-export const getSymlinkAbsPath: GetSymlinkAbsPath = bash => (link, dir) => bash(`readlink ${link}`, dir);
+export const getSymlinkAbsPath: GetSymlinkAbsPath = bash => (link, dir) => bash(`readlink ${link}`, dir)
+    .then((path:string) => path.replace(/\n/g, ''));
 
 export type RemoveRecByPath = (bash: (...xs:any) => any) => (path:string, dir:string) => Promise<string>
 export const removeRecByPath: RemoveRecByPath = bash => (path, dir) => bash(`sudo rm -rf ${path}`, dir);
@@ -81,16 +82,14 @@ export const getUserServiceNodeModulesPath: ExecBash = () => bash => path => bas
     `find ${path} -type d -name 'node_modules' -prune`,
     '/'
 )
-    .then(splitByLines)
-    .then((x: any) => x.filter(Boolean));
+    .then(splitByLines);
 
 export const getUserServicesArrayNewerThen: GetUserServicesArrayNewerThen = ({daysExpired}) => bash => path => bash(
     `find . ! -path '*/node_modules/*' ! -path '*/.git/*' -type f -mtime -${daysExpired || Infinity}`,
     path
 )
     .then(replaceBy(/\.\//g, `${path}/`))
-    .then(splitByLines)
-    .then((x: any) => x.filter(Boolean));
+    .then(splitByLines);
 
 export const getAllServiceGitBranches: ExecBash = () => bash => path => bash(
     'ls | cat | xargs -I % sh -c "cd %; git branch 2> /dev/null; cd .."',

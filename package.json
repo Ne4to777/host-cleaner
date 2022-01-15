@@ -18,7 +18,7 @@
     "remove:dist": "rm -rf dist",
     "revert": "rm -rf node_modules && rm -rf package-lock.json",
     "reinstall": "npm run revert && npm i",
-    "clean:reports": "rm -f reports/*",
+    "clean:reports": "rm -rf reports",
     "task:cleanDismissedUsers": "npm run start -- cleanDismissedUsers",
     "task:cleanOrphanedUsers": "npm run start -- cleanOrphanedUsers",
     "task:cleanNodeModules": "npm run start -- cleanNodeModules",

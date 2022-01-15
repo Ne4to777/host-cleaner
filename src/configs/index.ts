@@ -10,6 +10,7 @@ export type Config = {
         subject: string
     },
     daysExpired: number,
+    debugCommands: boolean,
     hosts: string[]
 }
 
@@ -25,6 +26,7 @@ export default ({
         subject: 'Не оставайся в стороне! Благо само себя не нанесет',
     },
     daysExpired: 30,
+    debugCommands: false,
     hosts: [
         'market.logrus01hd.yandex.ru',
         'market.logrus01ed.yandex.ru',

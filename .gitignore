@@ -4,6 +4,7 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+debug
 
 # Runtime data
 pids
@@ -63,5 +64,5 @@ typings/
 dist
 docs
 .DS_Store
-reports/*
+reports
 .idea
