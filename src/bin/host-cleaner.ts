@@ -29,6 +29,12 @@ const withConfigs = (f: (x: any) => any) => pipe(mergeConfigs, f);
         alias: 's',
         describe: 'need ssh',
     })
+    .option('hosts', {
+        type: 'array',
+        default: defaultConfigs.hosts,
+        alias: 'h',
+        describe: 'hosts to clean',
+    })
     .command('cleanDismissedUsers', 'Clean Dismissed Users Task', NULL, withConfigs(cleanDismissedUsers))
     .command('cleanOrphanedUsers', 'Clean Orphaned Users Task', NULL, withConfigs(cleanOrphanedUsers))
     .command('cleanNodeModules', 'Clean Node Modules Task', NULL, withConfigs(cleanNodeModules))
