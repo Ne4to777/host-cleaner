@@ -11,6 +11,6 @@ export const getOldNodeModulesPaths: Sniffer = parapipe(
     () => ([bashUserServiceNodeModulesPath, oldServices]) => pipe(
         mapAsync(bashUserServiceNodeModulesPath),
         Object.values,
-        reduce((acc, x: any) => acc.concat(x), [])
+        reduce((acc, x: any) => acc.concat(x || []), [])
     )(oldServices)
 );

@@ -4,7 +4,7 @@ import {exec} from 'child_process';
 import * as dotenv from 'dotenv';
 import {NodeSSH} from 'node-ssh';
 
-import {debugCommandsToFile, debugToFile, reduceAsync, replaceBy, splitByLines, splitBySpaces} from '../utils';
+import {debugCommandsToFile, debugToFile, log, reduceAsync, replaceBy, splitByLines, splitBySpaces} from '../utils';
 import {getServiceInfoMap, GetUserServicesArrayNewerThen} from '../helpers';
 
 const run = promisify(exec);
@@ -89,7 +89,7 @@ export const getUserServicesArrayNewerThen: GetUserServicesArrayNewerThen = ({da
     path
 )
     .then(replaceBy(/\.\//g, `${path}/`))
-    .then(splitByLines);
+    .then((x: string) => x ? splitByLines(x) : []);
 
 export const getAllServiceGitBranches: ExecBash = () => bash => path => bash(
     'ls | cat | xargs -I % sh -c "cd %; git branch 2> /dev/null; cd .."',

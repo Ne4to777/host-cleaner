@@ -25,7 +25,7 @@ console.log('\n');
 // getDoubledUsersPaths(configs)('market.logrus01ed.yandex.ru').then(console.log);
 // getGitBranches(configs)('market.logrus01ed.yandex.ru').then(console.log);
 // getNodeModulesPaths(configs)('market.logrus01ed.yandex.ru').then(console.log);
-// getOldNodeModulesPaths(configs)('market.logrus01ed.yandex.ru').then(console.log);
+// getOldNodeModulesPaths(configs)('market.logrus01hd.yandex.ru').then(console.log);
 // getOldServices(configs)('market.logrus01ed.yandex.ru').then(console.log);
 // getOrphanedUsersPaths(configs)('market.logrus01ed.yandex.ru').then(console.log);
 
