@@ -82,7 +82,7 @@ export const getUserServiceNodeModulesPath: ExecBash = () => bash => path => bas
     `find ${path} -type d -name 'node_modules' -prune`,
     '/'
 )
-    .then(splitByLines);
+    .then((x: string) => x ? splitByLines(x) : []);
 
 export const getUserServicesArrayNewerThen: GetUserServicesArrayNewerThen = ({daysExpired}) => bash => path => bash(
     `find . ! -path '*/node_modules/*' ! -path '*/.git/*' -type f -mtime -${daysExpired || Infinity}`,
@@ -90,6 +90,12 @@ export const getUserServicesArrayNewerThen: GetUserServicesArrayNewerThen = ({da
 )
     .then(replaceBy(/\.\//g, `${path}/`))
     .then((x: string) => x ? splitByLines(x) : []);
+
+export const getHasUserServicesArrayNewerThen: GetUserServicesArrayNewerThen = ({daysExpired}) => bash => path => bash(
+    `find . ! -path '*/node_modules/*' ! -path '*/.git/*' -type f -mtime -${daysExpired || Infinity}`,
+    path
+)
+    .then(Boolean);
 
 export const getAllServiceGitBranches: ExecBash = () => bash => path => bash(
     'ls | cat | xargs -I % sh -c "cd %; git branch 2> /dev/null; cd .."',

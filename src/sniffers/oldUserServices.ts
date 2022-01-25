@@ -1,11 +1,15 @@
-import {getConnector, getUsersAllServicesArray, getUserServicesArrayNewerThen} from '../api';
+import {
+    getConnector,
+    getHasUserServicesArrayNewerThen,
+    getUsersAllServicesArray
+} from '../api';
 import {reduceAsync, excludeFromMap, arrayToExistenceMap, parapipe, para, para2, pipe} from '../utils';
 import type {Sniffer} from '../helpers';
 
 export const getOldServices: Sniffer = parapipe(
     getConnector,
     para2(
-        getUserServicesArrayNewerThen,
+        getHasUserServicesArrayNewerThen,
         getUsersAllServicesArray,
     ),
     () => ([bashUserServicesArrayNewerThen, bashUsersAllServicesArray]) => pipe(
@@ -14,8 +18,8 @@ export const getOldServices: Sniffer = parapipe(
             arrayToExistenceMap,
             reduceAsync(async (acc: any, path: any) => {
                 console.log(path);
-                const paths = await bashUserServicesArrayNewerThen(path);
-                return acc.concat(paths.length ? path : []);
+                const hasPaths = await bashUserServicesArrayNewerThen(path);
+                return acc.concat(hasPaths ? path : []);
             }, []),
         ),
         ([existenceMap, usersNewerServices]) => excludeFromMap(existenceMap)(usersNewerServices),
