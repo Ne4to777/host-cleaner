@@ -4,7 +4,7 @@ import {exec} from 'child_process';
 import * as dotenv from 'dotenv';
 import {NodeSSH} from 'node-ssh';
 
-import {debugCommandsToFile, debugToFile, log, reduceAsync, replaceBy, splitByLines, splitBySpaces} from '../utils';
+import {debugCommandsToFile, reduceAsync, replaceBy, splitByLines, splitBySpaces} from '../utils';
 import {getServiceInfoMap, GetUserServicesArrayNewerThen} from '../helpers';
 
 const run = promisify(exec);
