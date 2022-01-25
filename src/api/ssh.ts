@@ -34,7 +34,7 @@ export const connectorSSH: ConnectorSSH = ({debugCommands}) => host => {
 
 export const connectorNode: ConnectorNode = ({debugCommands}) => host => (command, folder = '/') => {
     if (debugCommands) debugCommandsToFile(command, folder, host);
-    return run(command, {cwd: folder, maxBuffer: 1000 * 1024}).then(({stdout}) => stdout);
+    return run(command, {cwd: folder, maxBuffer: 10000 * 1024}).then(({stdout}) => stdout);
 };
 
 type GetConnector = (configs: any) => (host: any) => any
