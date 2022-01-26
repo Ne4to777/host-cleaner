@@ -66,3 +66,4 @@ docs
 .DS_Store
 reports
 .idea
+package-lock.json

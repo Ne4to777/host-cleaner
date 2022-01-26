@@ -12,8 +12,6 @@
     "lint": "npx eslint --ext .ts src/",
     "lint:fix": "npm run lint -- --fix",
     "lint:typescript": "npx tsc --build tsconfig.lint.json",
-    "prepublish:npm": "npm run build && npm run lint",
-    "publish:npm": "npm publish dist/ --registry='http://npm.yandex-team.ru' --public",
     "clean": "npm run remove:dist",
     "remove:dist": "rm -rf dist",
     "revert": "rm -rf node_modules && rm -rf package-lock.json",
