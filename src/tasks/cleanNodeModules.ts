@@ -9,9 +9,9 @@ export default pipe(
         name: 'NodeModules',
         sniffer: getNodeModulesPaths,
         runner: cleaner,
-        configs
+        configs,
     }),
     hostsIterator,
     info('Task is done!'),
-    processExit0
+    processExit0,
 );

@@ -16,8 +16,8 @@ export const mailer: Runner = ({name, configs, formatter}) => pipe(
                 if (!_acc[login]) _acc[login] = {};
                 _acc[login][host] = servicesMap;
                 return _acc;
-            }, acc
-        )(Object.entries(loginsMap)), {} as Record<string, any>
+            }, acc,
+        )(Object.entries(loginsMap)), {} as Record<string, any>,
     ),
     pushReport,
     dataMap => pipe(
@@ -31,18 +31,18 @@ export const mailer: Runner = ({name, configs, formatter}) => pipe(
                     (login: string) => ({
                         subject: configs.email.subject,
                         text: formatter(login, dataMap[login]),
-                        to: emailsMap[login]
+                        to: emailsMap[login],
                     }),
                     pipeSync(
                         data => sendEmail(configs.mode === 'real' ? data : {}),
                         catchAsync(pushReport),
                     ),
-                    pushReport
+                    pushReport,
                 ),
                 mapAsync,
                 T(logins),
             ),
-        )(logins)
+        )(logins),
     )(dataMap),
     () => reportWrite({name, folder: 'email'})(report.join('\n')),
 );

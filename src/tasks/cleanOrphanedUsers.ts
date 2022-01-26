@@ -9,9 +9,9 @@ export default pipe(
         name: 'OrphanedUsers',
         sniffer: getOrphanedUsersPaths,
         runner: cleaner,
-        configs
+        configs,
     }),
     hostsIterator,
     info('Task is done!'),
-    processExit0
+    processExit0,
 );

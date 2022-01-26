@@ -1,4 +1,4 @@
-import {arrayToExistenceMap, parapipe, para} from '../utils';
+import {arrayToExistenceMap, parapipe, para, pipe} from '../utils';
 import {getAllDismissedUsersCached, getUsersAllArray, getConnector} from '../api';
 import type {Sniffer} from '../helpers';
 
@@ -7,9 +7,9 @@ export const getDismissedUsersPaths: Sniffer = parapipe(
     getUsersAllArray,
     () => bashUsersAllArray => para(
         bashUsersAllArray,
-        getAllDismissedUsersCached
+        pipe(getAllDismissedUsersCached, arrayToExistenceMap),
     )(),
-    ({usersPath}) => ([usersAll, usersDismissed]) => usersAll
-        .filter((user: string) => Boolean(arrayToExistenceMap(usersDismissed)[user]))
-        .map((user: string) => `${usersPath}/${user}`)
+    ({usersPath}) => ([usersAll, usersDismissedMap]) => usersAll
+        .filter((user: string) => Boolean(usersDismissedMap[user]))
+        .map((user: string) => `${usersPath}/${user}`),
 );

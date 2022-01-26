@@ -14,10 +14,9 @@ const {USERNAME, PRIVATE_KEY_PATH, PASSPHRASE} = process.env;
 
 const ssh = new NodeSSH();
 
-type ConnectorSSH = (configs: any) => (host: string) => (command:string, folder:string) => Promise<any>
-type ConnectorNode = (configs: any) => (host: string) =>(command:string, folder:string) => Promise<any>
+type Connector = (configs: any) => (host: string) => (command:string, folder:string) => Promise<string>
 
-export const connectorSSH: ConnectorSSH = ({debugCommands}) => host => {
+export const connectorSSH: Connector = ({debugCommands}) => host => {
     if (!host) throw new Error('SSH host is missed');
     const session = ssh.connect({
         host,
@@ -32,13 +31,12 @@ export const connectorSSH: ConnectorSSH = ({debugCommands}) => host => {
         .then(({stdout}) => stdout);
 };
 
-export const connectorNode: ConnectorNode = ({debugCommands}) => host => (command, folder = '/') => {
+export const connectorNode: Connector = ({debugCommands}) => host => (command, folder = '/') => {
     if (debugCommands) debugCommandsToFile(command, folder, host);
-    return run(command, {cwd: folder, maxBuffer: 10000 * 1024}).then(({stdout}) => stdout);
+    return run(command, {cwd: folder, maxBuffer: 10240000}).then(({stdout}) => stdout);
 };
 
-type GetConnector = (configs: any) => (host: any) => any
-export const getConnector: GetConnector = configs => configs.ssh ? connectorSSH(configs) : connectorNode(configs);
+export const getConnector: Connector = configs => configs.ssh ? connectorSSH(configs) : connectorNode(configs);
 
 export type GetSymlinkAbsPath = (bash: (...xs:any) => any) => (link:string, dir:string) => Promise<string>
 export const getSymlinkAbsPath: GetSymlinkAbsPath = bash => (link, dir) => bash(`readlink ${link}`, dir)
@@ -53,53 +51,53 @@ export const getDiskUsage: GetDiskUsage = bash => () => bash('df -h', '/');
 export type ExecBash = (configs: any) => (bash: (...xs:any) => any) => (param: any) => Promise<any>
 export const getUsersSymlinksArray: ExecBash = ({usersPath}) => bash => () => bash(
     'find . -mindepth 2 -maxdepth 2 -regex ".+_.+" -type l',
-    usersPath
+    usersPath,
 )
     .then(splitByLines);
 
 export const getUsersAllServicesArray: ExecBash = ({servicesPath}) => bash => () => bash(
     'find . -mindepth 2 -maxdepth 2 -type d',
-    servicesPath
+    servicesPath,
 )
     .then(replaceBy(/\.\//g, `${servicesPath}/`))
     .then(splitByLines);
 
 export const getAllServicesArray: ExecBash = ({servicesPath}) => bash => () => bash(
     'find . -mindepth 1 -maxdepth 1 -type d',
-    servicesPath
+    servicesPath,
 )
     .then(replaceBy(/\.\//g, `${servicesPath}/`))
     .then(splitByLines);
 
 export const getAllServiceNodeModulesArray: ExecBash = ({servicesPath}) => bash => () => bash(
     'find . -maxdepth 3 -name node_modules -type d',
-    servicesPath
+    servicesPath,
 )
     .then(replaceBy(/\.\//g, `${servicesPath}/`))
     .then(splitByLines);
 
 export const getUserServiceNodeModulesPath: ExecBash = () => bash => path => bash(
     `find ${path} -type d -name 'node_modules' -prune`,
-    '/'
+    '/',
 )
     .then((x: string) => x ? splitByLines(x) : []);
 
 export const getUserServicesArrayNewerThen: GetUserServicesArrayNewerThen = ({daysExpired}) => bash => path => bash(
     `find . ! -path '*/node_modules/*' ! -path '*/.git/*' -type f -mtime -${daysExpired || Infinity}`,
-    path
+    path,
 )
     .then(replaceBy(/\.\//g, `${path}/`))
     .then((x: string) => x ? splitByLines(x) : []);
 
 export const getHasUserServicesArrayNewerThen: GetUserServicesArrayNewerThen = ({daysExpired}) => bash => path => bash(
     `find . ! -path '*/node_modules/*' ! -path '*/.git/*' -type f -mtime -${daysExpired || Infinity}`,
-    path
+    path,
 )
     .then(Boolean);
 
 export const getAllServiceGitBranches: ExecBash = () => bash => path => bash(
     'ls | cat | xargs -I % sh -c "cd %; git branch 2> /dev/null; cd .."',
-    path
+    path,
 )
     .then(replaceBy(/^\s|\*/g, ''))
     .then(replaceBy(/\s+/g, ' '))
@@ -108,7 +106,7 @@ export const getAllServiceGitBranches: ExecBash = () => bash => path => bash(
 
 export const getServiceUserGitBranches: ExecBash = () => bash => path => bash(
     'git branch 2> /dev/null',
-    path
+    path,
 )
     .then(replaceBy(/\*/g, ' '))
     .then(replaceBy(/^\s+/g, ''))
@@ -120,18 +118,18 @@ export const getUsersExistServices: ExecBash = ({usersPath}) => bash => reduceAs
         const symlinkAbsPath = await getSymlinkAbsPath(bash)(link, usersPath);
         if (symlinkAbsPath) return acc.concat(symlinkAbsPath);
         return acc;
-    }, []
+    }, [],
 );
 
 export const getUsersAllArray: ExecBash = ({usersPath}) => bash => () => bash(
     'ls',
-    usersPath
+    usersPath,
 )
     .then(splitByLines);
 
 export const getServicesInfo: ExecBash = () => bash => path => bash(
     'ls -ld */',
-    path
+    path,
 )
     // @ts-ignore
     .then((servicesinfo: string) => servicesinfo

@@ -7,9 +7,9 @@ export const getEmailContent: GetEmailContent = (login, data) => {
             .map(([service, doubles]) =>
                 `<li style="padding-top: 8px;"><div>${service}</div><ul>${doubles
                     .map((double: string) => `<li style="padding-top: 8px;">${double}</li>`)
-                    .join('')}</ul></li>`
+                    .join('')}</ul></li>`,
             )
-            .join('')}</ul>`
+            .join('')}</ul>`,
         )
         .join('')}</div>`;
 

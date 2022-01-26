@@ -87,12 +87,18 @@ export const T:TType = x => f => f(x);
 
 type Info = (msg: string) => <Arg>(x: Arg) => Arg
 export const info: Info = msg => x => {
-    console.log(msg);
+    if (process.env.NODE_ENV !== 'TESTING') console.log(msg);
     return x;
 };
 type Log = <Arg>(x: Arg) => Arg
-export const log: Log = x => {
+
+export const debug: Log = x => {
     console.log(x);
+    return x;
+};
+
+export const log: Log = x => {
+    if (process.env.NODE_ENV !== 'TESTING') console.log(x);
     return x;
 };
 
@@ -129,7 +135,7 @@ type DebugCommandsToFile = <G, F>(command: G, folder: F, host: string) => any
 export const debugCommandsToFile: DebugCommandsToFile = (
     command,
     folder,
-    host
+    host,
 ) => debugToFile(`commands/${host}`)(`command: '${command}' in '${folder}'`);
 
 type LogToFile = (data: any) => any

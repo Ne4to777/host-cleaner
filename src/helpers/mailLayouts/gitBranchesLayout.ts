@@ -9,11 +9,11 @@ export const getEmailContent: GetEmailContent = (login, data) => {
                 .map(([folder, branches]) =>
                     `<li style="padding-top: 8px;"><div>${folder}</div><ul>${branches
                         .map((branch: string) => `<li style="padding-top: 8px;">${branch}</li>`)
-                        .join('')}</ul></li>`
+                        .join('')}</ul></li>`,
                 )
-                .join('')}</ul>`
+                .join('')}</ul>`,
             )
-            .join('')}</ul>`
+            .join('')}</ul>`,
         )
         .join('')}</div>`;
 

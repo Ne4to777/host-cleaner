@@ -21,9 +21,9 @@ export const sendEmail: SendEmail = ({text, to, subject}) => new Promise(
                 from,
                 to,
                 subject,
-                attachment: [{data: text, alternative: true}]
+                attachment: [{data: text, alternative: true}],
             }),
-            (err, message) => err ? log(err.message) || reject(err) : resolve(message)
+            (err, message) => err ? log(err.message) || reject(err) : resolve(message),
         )
-        : resolve(new Message({text: 'Email sending is skipped'}))
+        : resolve(new Message({text: 'Email sending is skipped'})),
 );

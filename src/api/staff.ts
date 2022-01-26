@@ -22,7 +22,7 @@ export const getQuery: GetQuery = ({
     query = '',
     conditions = [],
     fields = [],
-    limit = 0
+    limit = 0,
 }) => {
     const result = [];
     if (query) result.push(`_query=${encodeURIComponent(query)}`);
@@ -33,7 +33,7 @@ export const getQuery: GetQuery = ({
 };
 
 const HEADERS = {
-    Authorization: `OAuth ${STAFF_AUTH_TOKEN}`
+    Authorization: `OAuth ${STAFF_AUTH_TOKEN}`,
 };
 
 export const getRequest = (params: QueryParams): string => STAFF_HOST + STAFF_PATH + getQuery(params);
@@ -43,8 +43,8 @@ export const get = (query: QueryParams, params: any = {}): Promise<User[]> => ax
         ...params,
         headers: {
             ...params.headers,
-            ...HEADERS
-        }
+            ...HEADERS,
+        },
     })
     .then(res => res.data.result);
 
@@ -52,7 +52,7 @@ export const getUserById = (id: string): Promise<User[]> => get({conditions: [`l
 
 export const getUsersByIds = (ids: string[]): Promise<User[]> => get({
     conditions: [`login=${ids.join(',')}`],
-    fields: ['login', 'work_email']
+    fields: ['login', 'work_email'],
 });
 
 type GetAllDismissedUsers = () => Promise<User[]>
@@ -60,7 +60,7 @@ export const getAllDismissedUsers: GetAllDismissedUsers = () => get({
     limit: 5000,
     query: 'department_group.id==1694 or department_group.ancestors.id==1694',
     conditions: ['official.is_dismissed=true', 'official.is_robot=false'],
-    fields: ['login']
+    fields: ['login'],
 })
     .then(response => response.map(user => user.login));
 

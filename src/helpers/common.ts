@@ -22,17 +22,17 @@ export const folderizeLastLeaf = reduce((acc: any, path: string) => {
 export const hostsIterator: HostsIterator = ({configs, run}) => pipe(
     mapAsync(pipe(
         host => info(`HOST: ${host}`)(host),
-        host => run(host).catch(info(`FAILED ITERATION ON HOST: ${host}`))
+        host => run(host).catch(info(`FAILED ITERATION ON HOST: ${host}`)),
     )),
-    info('ALL HOSTS ARE ITERATED!')
+    info('ALL HOSTS ARE ITERATED!'),
 )(configs.hosts);
 
 export const getServiceInfoMap: GetServiceInfoMap = xs => ({
     login: xs[2],
-    folderName: xs[8].replace(/\/$/, '')
+    folderName: xs[8].replace(/\/$/, ''),
 });
 
 export const getTask: GetTask = ({runner, sniffer, ...rest}) => ({
     run: runner({sniff: sniffer(rest.configs), ...rest}),
-    ...rest
+    ...rest,
 });

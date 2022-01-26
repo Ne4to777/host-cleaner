@@ -11,13 +11,13 @@ export default pipe(
         sniffer: getDoubledUsersPaths,
         runner: aggregator,
         formatter: getEmailContent,
-        configs
+        configs,
     }),
     para(
         mailer,
-        hostsIterator
+        hostsIterator,
     ),
     ([sendMail, data]) => sendMail(data),
     info('Task is done!'),
-    processExit0
+    processExit0,
 );

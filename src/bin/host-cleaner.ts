@@ -12,7 +12,7 @@ import {
     cleanOldNodeModules,
     cleanOldUserServices,
     mailAboutGitBranches,
-    mailToDoubledUsers
+    mailToDoubledUsers,
 } from '../tasks';
 
 const withConfigs = (f: (x: any) => any) => pipe(mergeConfigs, f);

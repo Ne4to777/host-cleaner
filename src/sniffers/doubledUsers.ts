@@ -7,7 +7,7 @@ export const getDoubledUsersPaths: Sniffer = parapipe(
     getConnector,
     para2(
         getAllServicesArray,
-        getServicesInfo
+        getServicesInfo,
     ),
     () => ([bashAllServicesArray, bashServicesInfo]) => pipe(
         bashAllServicesArray,
@@ -18,7 +18,7 @@ export const getDoubledUsersPaths: Sniffer = parapipe(
                 if (!_acc[login]) _acc[login] = [];
                 _acc[login].push(`${path}/${folderName}`);
                 return _acc;
-            }, acc)
+            }, acc),
         )(path), {} as any),
         Object.entries,
         reduce(
@@ -33,9 +33,9 @@ export const getDoubledUsersPaths: Sniffer = parapipe(
                             if (!_acc[login]) _acc[login] = {};
                             _acc[login][folder] = names;
                             return _acc;
-                        }, acc
-                    )
-                )(paths), {} as Record<string, Record<string, string[]>>
+                        }, acc,
+                    ),
+                )(paths), {} as Record<string, Record<string, string[]>>,
         ),
     )(),
 );

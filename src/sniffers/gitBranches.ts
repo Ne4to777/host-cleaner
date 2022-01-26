@@ -7,7 +7,7 @@ export const getGitBranches: Sniffer = parapipe(
     para2(
         getAllServicesArray,
         getServicesInfo,
-        getServiceUserGitBranches
+        getServiceUserGitBranches,
     ),
     () => ([bashAllServicesArray, bashServicesInfo, bashServiceUserGitBranches]) => pipe(
         bashAllServicesArray,
@@ -24,7 +24,7 @@ export const getGitBranches: Sniffer = parapipe(
                     _acc[login][path][folderName] = branchesFiltered;
                 }
                 return _acc;
-            }, acc)
+            }, acc),
         )(path), {} as any),
     )(),
 );
