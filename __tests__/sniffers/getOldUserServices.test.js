@@ -1,12 +1,14 @@
 import {getOldUserServices} from '../../src/sniffers';
 import defaultConfigs from '../../src/configs';
-import {getHasUserServicesArrayNewerThen, getUsersAllServicesArray} from '../../src/api';
 
-jest.mock('../../src/api', () => ({
-    ...jest.requireActual('../../src/api'),
+jest.mock('../../src/helpers', () => ({
+    ...jest.requireActual('../../src/helpers'),
     getConnector: jest
         .fn()
         .mockImplementation(() => () => () => Promise.resolve('')),
+}));
+jest.mock('../../src/api', () => ({
+    ...jest.requireActual('../../src/api'),
     getHasUserServicesArrayNewerThen: jest
         .fn()
         .mockImplementation(() => () => path => Promise.resolve(/s1/.test(path))),

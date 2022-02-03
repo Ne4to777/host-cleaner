@@ -1,11 +1,14 @@
 import {getOrphanedUsersPaths} from '../../src/sniffers';
 import defaultConfigs from '../../src/configs';
 
-jest.mock('../../src/api', () => ({
-    ...jest.requireActual('../../src/api'),
+jest.mock('../../src/helpers', () => ({
+    ...jest.requireActual('../../src/helpers'),
     getConnector: jest
         .fn()
         .mockImplementation(() => () => () => Promise.resolve('')),
+}));
+jest.mock('../../src/api', () => ({
+    ...jest.requireActual('../../src/api'),
     getUsersExistServices: jest
         .fn()
         .mockImplementation(() => () => () => Promise.resolve([

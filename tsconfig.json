@@ -12,7 +12,7 @@
         "resolveJsonModule": true,
         "strict": true,
         "esModuleInterop": true,
-        "outDir": "./dist",
+        "outDir": "./build/dist",
         "downlevelIteration": true
     },
     "exclude": [

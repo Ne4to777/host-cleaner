@@ -1,7 +1,5 @@
 import {appendFileSync, existsSync, mkdirSync} from 'fs';
 
-import defaultConfigs from '../configs';
-
 export type GetUniqueFilename = () => string
 export const getUniqueFilename: GetUniqueFilename = () => {
     const date = new Date();
@@ -9,26 +7,23 @@ export const getUniqueFilename: GetUniqueFilename = () => {
         date.getHours()}_${date.getMinutes()}_${date.getSeconds()}`;
 };
 
-const flatClone = (x: any) => {
-    if (isObject(x)) return {...x};
-    if (isArray(x)) return [...x];
-    return x;
-};
+export type Reduce = (accGetter: () => any) => (f: (_acc: any) => (x: any) => any) => (xs: any[]) => any
+export const reduce: Reduce = accGetter => f => xs => xs.reduce((_acc, x) => f(_acc)(x), accGetter());
 
-export type Reduce = <Acc, X>(f: (acc: Acc, x: X) => Acc, acc: Acc) => (xs: X[]) => Acc
-export const reduce: Reduce = (f, acc) => xs => xs.reduce(f, flatClone(acc));
-
-export type ReduceAsync = <Acc, X>(f: (acc: Acc, x: X) => Promise<Acc>, acc: Acc) => (xs: X[]) => Promise<Acc>
-export const reduceAsync: ReduceAsync = (f, acc) => async xs => {
+export type ReduceAsync = (accGetter: () => any) => (
+    f: (_acc: any) => (x: any) => Promise<any>
+) => (xs: any[]) => Promise<any>
+export const reduceAsync: ReduceAsync = accGetter => f => async xs => {
+    let acc = accGetter();
     for (const x of xs) {
         // eslint-disable-next-line no-param-reassign,no-await-in-loop
-        acc = await f(acc, x);
+        acc = await f(acc)(x);
     }
     return acc;
 };
 
-export type MapAsync = <X extends string, K>(f: (x: X) => Promise<K>) => (xs: X[]) => Promise<Record<X, K>>
-export const mapAsync: MapAsync = f => async xs => {
+export type MapifyAsync = <X extends string, K>(f: (x: X) => Promise<K>) => (xs: X[]) => Promise<Record<X, K>>
+export const mapifyAsync: MapifyAsync = f => async xs => {
     const result:Record<string, any> = {};
     for (const x of xs) {
         // eslint-disable-next-line no-await-in-loop
@@ -38,10 +33,10 @@ export const mapAsync: MapAsync = f => async xs => {
 };
 
 type MapifyArray = (key: string, prop?: string) => (data: Record<string, any>[]) => Record<string, any>
-export const mapifyArray: MapifyArray = (key, prop) => reduce((acc, o: any) => {
+export const mapifyArray: MapifyArray = (key, prop) => reduce(() => ({}))(acc => o => {
     acc[o[key]] = prop ? o[prop] : o;
     return acc;
-}, {} as Record<string, string>);
+});
 
 export type ExcludeFromMap = <T>(map: Record<string, T>) => (x: string[]) => Record<string, T>
 export const excludeFromMap: ExcludeFromMap = map => xs => xs.reduce((acc, x) => {
@@ -67,17 +62,13 @@ export const splitBySpaces: SplitBySpaces = x => x.split(' ');
 export type ReplaceBy = (re: RegExp, to: string) => (x: string) => string
 export const replaceBy: ReplaceBy = (re, to) => x => x.replace(re, to);
 
-export const localCompare = Function.prototype.call.bind(String.prototype.localeCompare);
-
-export type AnyToAnyT = (...xs: any) => any;
-export type AnyToAny2T = (...xs: any) => AnyToAnyT;
-export type AnyToAny3T = (...xs: any) => AnyToAny2T;
-
 type IType = <T>(x: T) => T
 export const I: IType = x => x;
 
-type KType = <T>(x: T) => (y:void) => T
+type KType = <T>(x: T) => () => T
 export const K: KType = x => () => x;
+type K2Type = <T>(x: T) => () => () => T
+export const K2: K2Type = x => K(() => x);
 
 type CType = <T, L, N>(f: any) =>(y?: T) => (x?: L) => N
 export const C:CType = f => y => x => f(x)(y);
@@ -85,9 +76,11 @@ export const C:CType = f => y => x => f(x)(y);
 type TType = <T, L>(x?: T) => (f:(_x?: T) => L) => L
 export const T:TType = x => f => f(x);
 
-type Info = (msg: string) => <Arg>(x: Arg) => Arg
+type Info = (msg: any) => <Arg>(x: Arg) => Arg
 export const info: Info = msg => x => {
-    if (process.env.NODE_ENV !== 'TESTING') console.log(msg);
+    if (process.env.NODE_ENV !== 'TESTING') {
+        console.log(typeof msg === 'function' ? msg(x) : msg);
+    }
     return x;
 };
 type Log = <Arg>(x: Arg) => Arg
@@ -124,6 +117,9 @@ export const isArray: IsArray = x => typeOf(x) === 'array';
 type MergeFlat = <O1, O2>(o1: Record<string, O1>)=>(o2: Record<string, O2>) => Record<string, O1|O2>
 export const mergeFlat:MergeFlat = o1 => o2 => ({...o1, ...o2});
 
+type CopySimpleObject = (o: Record<string, any>) => Record<string, any>
+export const copySimpleObject: CopySimpleObject = o => JSON.parse(JSON.stringify(o));
+
 type DebugToFile = <Arg>(path: string) => (data: Arg) => Arg
 export const debugToFile: DebugToFile = path => data => {
     const folderPath = `debug/${path}`;
@@ -149,8 +145,6 @@ export const stringify: Stringify = x => JSON.stringify(x, null, '    ');
 
 type TNull = (x?: any) =>null
 export const NULL: TNull = () => null;
-
-export const mergeConfigs = mergeFlat(defaultConfigs);
 
 export type Pipe = (...fns: Array<(x?: any) => any>) => (x?: any) => any
 
@@ -243,7 +237,7 @@ export const para2: Para2 = (...fns) => x => y => {
 
     if (!hasPromise) return res;
 
-    for (let i = res.length; i < fns.length; i += 1) res[i] = fns[i](x)();
+    for (let i = res.length; i < fns.length; i += 1) res[i] = fns[i](x)(y);
 
     return Promise.all(res);
 };
@@ -262,12 +256,28 @@ export const parapipe: Parapipe = (...fns) => x => pipe(...para(...fns)(x));
 /**
  * Side Synchronous
  */
-export const sideSync: SideSync = f => x => (_ => x)(f(x));
+export const sideSync: SideSync = f => x => {
+    f(x);
+    return x;
+};
 /**
  * Side Asynchronous
  */
-export const sideAsync: SideAsync = f => async x => (_ => x)(await f(x));
+export const sideAsync: SideAsync = f => async x => {
+    await f(x);
+    return x;
+};
 /**
  * Side Autodetect
  */
 export const side: Side = f => x => (res => res instanceof Promise ? res.then(() => x) : x)(f(x));
+
+type ToPipe = (...fs: ((x?: any) => any)[]) => () => Pipe
+export const toPipe: ToPipe = (...fs) => () => pipe(...fs);
+type Uncurry = (f: (x?: any) => any) => (xs: any[]) => any
+export const uncurry: Uncurry = f => xs => xs.reduce((acc, x) => acc(x), f);
+
+type Reduce2Async = (accGetter: () => any) => (f: (x?: any) => any) => (g: (x?: any) => any) => (x: any) => Promise<any>
+export const reduce2Async: Reduce2Async = accGetter => f => g => reduceAsync(accGetter)(
+    acc => x => f(x).then(reduceAsync(() => acc)(_acc => g(_acc)(x))),
+);

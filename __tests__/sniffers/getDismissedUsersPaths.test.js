@@ -1,12 +1,15 @@
 import {getDismissedUsersPaths} from '../../src/sniffers';
 import defaultConfigs from '../../src/configs';
 
-jest.mock('../../src/api', () => ({
-    ...jest.requireActual('../../src/api'),
+jest.mock('../../src/helpers', () => ({
+    ...jest.requireActual('../../src/helpers'),
     getConnector: jest
         .fn()
         .mockImplementation(() => () => () => Promise.resolve(['foo', 'bar', 'baz'].join('\n'))),
-    getAllDismissedUsersCached: jest
+}));
+jest.mock('../../src/api', () => ({
+    ...jest.requireActual('../../src/api'),
+   getAllDismissedUsersCached: jest
         .fn()
         .mockImplementation(() => Promise.resolve(['foo', 'bar'])),
 }));

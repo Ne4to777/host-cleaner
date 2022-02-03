@@ -1,5 +1,5 @@
 type GetEmailContent = (login: string, data: Record<string, Record<string, Record<string, string[]>>>) => string
-export const getEmailContent: GetEmailContent = (login, data) => {
+export const getGitBranchesEmailContent: GetEmailContent = (login, data) => {
     const report = `<div>${Object
         .entries(data)
         .map(([host, services]) => `<div>${host}</div><ul>${Object

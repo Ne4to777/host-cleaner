@@ -1,42 +1,5 @@
-import {promisify} from 'util';
-import {exec} from 'child_process';
-
-import * as dotenv from 'dotenv';
-import {NodeSSH} from 'node-ssh';
-
-import {debugCommandsToFile, reduceAsync, replaceBy, splitByLines, splitBySpaces} from '../utils';
+import {reduceAsync, replaceBy, splitByLines, splitBySpaces} from '../utils';
 import {getServiceInfoMap, GetUserServicesArrayNewerThen} from '../helpers';
-
-const run = promisify(exec);
-dotenv.config({path: './.env'});
-
-const {USERNAME, PRIVATE_KEY_PATH, PASSPHRASE} = process.env;
-
-const ssh = new NodeSSH();
-
-type Connector = (configs: any) => (host: string) => (command:string, folder:string) => Promise<string>
-
-export const connectorSSH: Connector = ({debugCommands}) => host => {
-    if (!host) throw new Error('SSH host is missed');
-    const session = ssh.connect({
-        host,
-        username: USERNAME,
-        privateKey: PRIVATE_KEY_PATH,
-        passphrase: PASSPHRASE,
-        readyTimeout: 60000,
-    });
-    return (command, folder = '/') => session
-        .then(() => debugCommands && debugCommandsToFile(command, folder, host))
-        .then(() => ssh.execCommand(command, {cwd: folder}))
-        .then(({stdout}) => stdout);
-};
-
-export const connectorNode: Connector = ({debugCommands}) => host => (command, folder = '/') => {
-    if (debugCommands) debugCommandsToFile(command, folder, host);
-    return run(command, {cwd: folder, maxBuffer: 10240000}).then(({stdout}) => stdout);
-};
-
-export const getConnector: Connector = configs => configs.ssh ? connectorSSH(configs) : connectorNode(configs);
 
 export type GetSymlinkAbsPath = (bash: (...xs:any) => any) => (link:string, dir:string) => Promise<string>
 export const getSymlinkAbsPath: GetSymlinkAbsPath = bash => (link, dir) => bash(`readlink ${link}`, dir)
@@ -48,7 +11,7 @@ export const removeRecByPath: RemoveRecByPath = bash => (path, dir) => bash(`sud
 export type GetDiskUsage = (bash: (...xs:any) => any) => () => Promise<string>
 export const getDiskUsage: GetDiskUsage = bash => () => bash('df -h', '/');
 
-export type ExecBash = (configs: any) => (bash: (...xs:any) => any) => (param: any) => Promise<any>
+export type ExecBash = (configs: any) => (bash: (...xs:any) => any) => (param: any) => Promise<string[]>
 export const getUsersSymlinksArray: ExecBash = ({usersPath}) => bash => () => bash(
     'find . -mindepth 2 -maxdepth 2 -regex ".+_.+" -type l',
     usersPath,
@@ -113,17 +76,29 @@ export const getServiceUserGitBranches: ExecBash = () => bash => path => bash(
     .then(replaceBy(/\s{2,}/g, '\n'))
     .then((x: string) => x ? splitByLines(x) : []);
 
-export const getUsersExistServices: ExecBash = ({usersPath}) => bash => reduceAsync(
-    async (acc: string[], link: string) => {
+export const getUsersExistServices: ExecBash = ({usersPath}) => bash => reduceAsync(() => [])(
+    acc => async link => {
         const symlinkAbsPath = await getSymlinkAbsPath(bash)(link, usersPath);
         if (symlinkAbsPath) return acc.concat(symlinkAbsPath);
         return acc;
-    }, [],
+    },
 );
 
 export const getUsersAllArray: ExecBash = ({usersPath}) => bash => () => bash(
     'ls',
     usersPath,
+)
+    .then(splitByLines);
+
+export const getUsersCacacheArray: ExecBash = ({usersPath}) => bash => () => bash(
+    `find ${usersPath}/*/.npm/_cacache -maxdepth 0`,
+    '/',
+)
+    .then(splitByLines);
+
+export const getUsersVSCodeArray: ExecBash = ({usersPath}) => bash => () => bash(
+    `find ${usersPath}/*/.vscode* -maxdepth 0`,
+    '/',
 )
     .then(splitByLines);
 
@@ -135,4 +110,4 @@ export const getServicesInfo: ExecBash = () => bash => path => bash(
     .then((servicesinfo: string) => servicesinfo
         .split('\n')
         .slice(1)
-        .map((row:string) => getServiceInfoMap(row.replace(/\s+/g, ' ').split(' '))));
+        .map((row: string) => getServiceInfoMap(row.replace(/\s+/g, ' ').split(' '))));
