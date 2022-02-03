@@ -42,8 +42,8 @@ export const get = (query: QueryParams, params: any = {}): Promise<User[]> => ax
     .get(getRequest(query), {
         ...params,
         headers: {
-            ...params.headers,
             ...HEADERS,
+            ...params.headers,
         },
     })
     .then(res => res.data.result);

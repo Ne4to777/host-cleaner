@@ -3,19 +3,9 @@ import {rmdirSync} from 'fs';
 
 import yargs from 'yargs';
 
-import {mergeConfigs, NULL, pipe} from '../utils';
 import defaultConfigs from '../configs';
-import {
-    cleanDismissedUsers,
-    cleanOrphanedUsers,
-    cleanNodeModules,
-    cleanOldNodeModules,
-    cleanOldUserServices,
-    mailAboutGitBranches,
-    mailToDoubledUsers,
-} from '../tasks';
-
-const withConfigs = (f: (x: any) => any) => pipe(mergeConfigs, f);
+import tasks from '../tasks';
+import {addCommands} from '../helpers';
 
 try {
     rmdirSync(`${process.cwd()}/debug`, {recursive: true});
@@ -23,7 +13,7 @@ try {
     // empty
 }
 
-(() => yargs(process.argv.slice(2))
+(() => addCommands(tasks)(yargs(process.argv.slice(2))
     .usage('Usage: $0 <command> [options]')
     .option('mode', {
         type: 'string',
@@ -49,13 +39,5 @@ try {
         alias: 'h',
         describe: 'hosts to clean',
     })
-    .command('cleanDismissedUsers', 'Clean Dismissed Users Task', NULL, withConfigs(cleanDismissedUsers))
-    .command('cleanOrphanedUsers', 'Clean Orphaned Users Task', NULL, withConfigs(cleanOrphanedUsers))
-    .command('cleanNodeModules', 'Clean Node Modules Task', NULL, withConfigs(cleanNodeModules))
-    .command('cleanOldNodeModules', 'Clean Old Node Modules Task', NULL, withConfigs(cleanOldNodeModules))
-    .command('cleanOldUserServices', 'Clean Old User Services Task', NULL, withConfigs(cleanOldUserServices))
-    .command('mailAboutGitBranches', 'Mail About Git Branches Task', NULL, withConfigs(mailAboutGitBranches))
-    .command('mailToDoubledUsers', 'Mail To Doubled Users Task', NULL, withConfigs(mailToDoubledUsers))
-    .help()
-    .argv
-)();
+    .help(),
+).argv)();

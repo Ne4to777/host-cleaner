@@ -9,21 +9,25 @@
     "build:files": "cp package.json package-lock.json README.md .npmrc .npmignore dist/",
     "start": "node -r esbuild-runner/register src/bin/host-cleaner.ts",
     "watch": "npx nodemon -q -w 'src/**' -e 'ts,json' -x 'node -r esbuild-runner/register src/index.ts'",
-    "lint": "npx eslint --ext .ts src/",
-    "lint:fix": "npm run lint -- --fix",
-    "lint:typescript": "npx tsc --build tsconfig.lint.json",
     "clean": "npm run remove:dist",
     "remove:dist": "rm -rf dist",
     "revert": "rm -rf node_modules && rm -rf package-lock.json",
     "reinstall": "npm run revert && npm i",
     "clean:reports": "rm -rf reports",
+    "test:ts": "npx tsc --build tsconfig.lint.json",
+    "test:eslint": "yarn run eslint . --format codeframe",
     "test:jest": "NODE_ENV=TESTING npx jest",
     "test:jest:watch": "NODE_ENV=TESTING npx jest --watch",
+    "ci:test:bootstrap:ts": "tsc --noEmit",
+    "ci:test:bootstrap:jest": "NODE_ENV=TESTING yarn run jest-ci .",
+    "ci:test:bootstrap:eslint": "eslint-ci .",
     "task:cleanDismissedUsers": "npm run start -- cleanDismissedUsers",
     "task:cleanOrphanedUsers": "npm run start -- cleanOrphanedUsers",
     "task:cleanNodeModules": "npm run start -- cleanNodeModules",
     "task:cleanOldNodeModules": "npm run start -- cleanOldNodeModules",
     "task:cleanOldUserServices": "npm run start -- cleanOldUserServices",
+    "task:cleanUsersCacache": "npm run start -- cleanUsersCacache",
+    "task:cleanUsersVSCode": "npm run start -- cleanUsersVSCode",
     "task:mailToDoubledUsers": "npm run start -- mailToDoubledUsers",
     "task:mailAboutGitBranches": "npm run start -- mailAboutGitBranches"
   },
@@ -43,12 +47,12 @@
     "@types/node": "^15.14.9",
     "@types/node-ssh": "^7.0.1",
     "@types/yargs": "^17.0.8",
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.33.0",
+    "@typescript-eslint/eslint-plugin": "^5.10.2",
+    "@typescript-eslint/parser": "^5.10.2",
     "@yandex-market/codestyle": "^3.3.1",
-    "babel-jest": "^27.4.6",
     "babel-eslint": "^10.1.0",
-    "esbuild": "^0.14.11",
+    "babel-jest": "^27.4.6",
+    "esbuild": "^0.14.18",
     "esbuild-runner": "^2.2.1",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.0",
@@ -59,5 +63,23 @@
     "jest": "^27.4.7",
     "nodemon": "^2.0.15",
     "typescript": "^4.5.4"
+  },
+  "config": {
+    "affected": {
+      "build": {
+        "exclude": [
+          "@yandex-market/jest",
+          "@yandex-market/eslinter"
+        ]
+      }
+    },
+    "precommit": [
+      "eslint"
+    ],
+    "build": {
+      "build": {
+        "duration": 25000
+      }
+    }
   }
 }

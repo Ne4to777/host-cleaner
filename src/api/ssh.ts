@@ -48,7 +48,7 @@ export const removeRecByPath: RemoveRecByPath = bash => (path, dir) => bash(`sud
 export type GetDiskUsage = (bash: (...xs:any) => any) => () => Promise<string>
 export const getDiskUsage: GetDiskUsage = bash => () => bash('df -h', '/');
 
-export type ExecBash = (configs: any) => (bash: (...xs:any) => any) => (param: any) => Promise<any>
+export type ExecBash = (configs: any) => (bash: (...xs:any) => any) => (param: any) => Promise<string[]>
 export const getUsersSymlinksArray: ExecBash = ({usersPath}) => bash => () => bash(
     'find . -mindepth 2 -maxdepth 2 -regex ".+_.+" -type l',
     usersPath,
@@ -113,17 +113,29 @@ export const getServiceUserGitBranches: ExecBash = () => bash => path => bash(
     .then(replaceBy(/\s{2,}/g, '\n'))
     .then((x: string) => x ? splitByLines(x) : []);
 
-export const getUsersExistServices: ExecBash = ({usersPath}) => bash => reduceAsync(
-    async (acc: string[], link: string) => {
+export const getUsersExistServices: ExecBash = ({usersPath}) => bash => reduceAsync(() => [])(
+    acc => async link => {
         const symlinkAbsPath = await getSymlinkAbsPath(bash)(link, usersPath);
         if (symlinkAbsPath) return acc.concat(symlinkAbsPath);
         return acc;
-    }, [],
+    },
 );
 
 export const getUsersAllArray: ExecBash = ({usersPath}) => bash => () => bash(
     'ls',
     usersPath,
+)
+    .then(splitByLines);
+
+export const getUsersCacacheArray: ExecBash = ({usersPath}) => bash => () => bash(
+    `find ${usersPath}/*/.npm/_cacache -maxdepth 0`,
+    '/',
+)
+    .then(splitByLines);
+
+export const getUsersVSCodeArray: ExecBash = ({usersPath}) => bash => () => bash(
+    `find ${usersPath}/*/.vscode* -maxdepth 0`,
+    '/',
 )
     .then(splitByLines);
 

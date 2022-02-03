@@ -1,6 +1,5 @@
 import {getOldUserServices} from '../../src/sniffers';
 import defaultConfigs from '../../src/configs';
-import {getHasUserServicesArrayNewerThen, getUsersAllServicesArray} from '../../src/api';
 
 jest.mock('../../src/api', () => ({
     ...jest.requireActual('../../src/api'),

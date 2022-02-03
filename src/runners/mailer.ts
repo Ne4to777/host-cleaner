@@ -1,5 +1,5 @@
-import {reportWrite, Runner} from '../helpers';
-import {info, mapAsync, mapifyArray, pipe, pipeSync, reduce, T, catchAsync, stringify} from '../utils';
+import {reportWrite, TotalRunner} from '../helpers';
+import {info, mapifyAsync, mapifyArray, pipe, pipeSync, reduce, T, catchAsync, stringify} from '../utils';
 import {getUsersByIds, sendEmail} from '../api';
 
 const report: string[] = [];
@@ -8,16 +8,16 @@ const pushReport = (x: any) => {
     return x;
 };
 
-export const mailer: Runner = ({name, configs, formatter}) => pipe(
+export const mailer: TotalRunner = ({name, configs, formatter}) => pipe(
     Object.entries,
-    reduce(
-        (acc, [host, loginsMap]: any[]) => reduce(
-            (_acc, [login, servicesMap]: any[]) => {
+    reduce(() => ({}))(
+        acc => ([host, loginsMap]) => reduce(() => acc)(
+            _acc => ([login, servicesMap]) => {
                 if (!_acc[login]) _acc[login] = {};
                 _acc[login][host] = servicesMap;
                 return _acc;
-            }, acc,
-        )(Object.entries(loginsMap)), {} as Record<string, any>,
+            },
+        )(Object.entries(loginsMap)),
     ),
     pushReport,
     dataMap => pipe(
@@ -39,7 +39,7 @@ export const mailer: Runner = ({name, configs, formatter}) => pipe(
                     ),
                     pushReport,
                 ),
-                mapAsync,
+                mapifyAsync,
                 T(logins),
             ),
         )(logins),
