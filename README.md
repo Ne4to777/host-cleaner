@@ -4,7 +4,7 @@
 
 ## Установка
 ```
-git clone https://github.yandex-team.ru/nybble/host-cleaner.git && cd host-cleaner && npm i
+yarn run bootstrap
 ```
 
 ## Настройка
@@ -23,21 +23,23 @@ git clone https://github.yandex-team.ru/nybble/host-cleaner.git && cd host-clean
 
 ## Запуск
 По умолчанию режим прогона тасок <code>mode</code> выставлен в <code>fake</code>, чтоб не удалить лишнего и не слать на почту. Когда будете уверенны в своих намерениях, поменяйте на <code>real</code> (<b>src/configs/index.ts</b>)
-- `npm run task:cleanDismissedUsers` - удалить папки уволенных сотрудников (после выполнить `task:cleanOrphanedUsers`)
-- `npm run task:cleanOrphanedUsers` - удалить папки сервисов на которые нет симлинков из папки юзеров
-- `npm run task:cleanOldNodeModules` - удалить node_modules в сервисах старше <b>daysExpired</b> дней (в крайнем случае)
-- `npm run task:cleanOldUserServices` - удалить все сервисы юзеров старше <b>daysExpired</b> дней (в крайнем случае)
-- `npm run task:cleanNodeModules` - удалить все node_modules в сервисах (<b>в крайнем случае</b>)
-- `npm run task:cleanUsersCacache` - удалить все .npm/_cacache юзеров
-- `npm run task:cleanUsersVSCode` - удалить все .vscode* юзеров
-- `npm run task:mailToDoubledUsers` - разослать уведомления на почту с просьбой удалить задвоенные сервисы
-- `npm run task:mailAboutGitBranches` - разослать уведомления на почту с просьбой удалить ненужные git-ветки
+- `yarn run task:cleanDismissedUsers` - удалить папки уволенных сотрудников (после выполнить `task:cleanOrphanedUsers`)
+- `yarn run task:cleanOrphanedUsers` - удалить папки сервисов на которые нет симлинков из папки юзеров
+- `yarn run task:cleanOldNodeModules` - удалить node_modules в сервисах старше <b>daysExpired</b> дней (в крайнем случае)
+- `yarn run task:cleanOldUserServices` - удалить все сервисы юзеров старше <b>daysExpired</b> дней (в крайнем случае)
+- `yarn run task:cleanNodeModules` - удалить все node_modules в сервисах (<b>в крайнем случае</b>)
+- `yarn run task:cleanUsersCacache` - удалить все .npm/_cacache юзеров
+- `yarn run task:cleanUsersVSCode` - удалить все .vscode* юзеров
+- `yarn run task:mailToDoubledUsers` - разослать уведомления на почту с просьбой удалить задвоенные сервисы
+- `yarn run task:mailAboutGitBranches` - разослать уведомления на почту с просьбой удалить ненужные git-ветки
+
+Для просмотра всех опций: `yarn run task -- --help`
 
 ## Отчеты
 Отчеты хранятся в папке <b>./reports</b> в виде пошаговых логов с указанием использования места до и после процедуры.
 Также ход выполнения таски выводится в консоль. 
 Файлы разбиваются по папкам в зависимости от хоста и таски и не перетирают друг друга. 
-Почистить отчеты можно `npm run clean:reports`
+Почистить отчеты можно `yarn run clean:reports`
 
 ## Разработка
 
@@ -56,7 +58,11 @@ type Task = {
 ```
 
 ### Отладка
-`npm run watch` и работать в <b>./src/index.ts</b>. 
+`yarn run watch` и работать в <b>./src/index.ts</b>. 
+
+Можно в конфиге выставить флаг debugCommands и логировать все баш-команды в папку debug
+
+Для имитации пакета как зависимости можно создать песочницу (папка <b>sandbox</b>) с помощью `yarn run bootstrap:sandbox` и запускать команды от туда, например, `npx host-cleaner cleanDismissedUsers` 
 
 ### Создание своей таски
 1. Продублировать таску cleanUsersCacache в массиве из <b>./src/tasks</b>

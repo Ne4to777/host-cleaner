@@ -1,7 +1,9 @@
 debug
 node_modules/
+sandbox
 .eslintcache
 .env
-build
+dist
 reports
 package-lock.json
+yarn.lock

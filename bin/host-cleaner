@@ -2,4 +2,4 @@
 
 'use strict';
 
-require('../src/bin/host-cleaner');
+require('../src/bin/index.ts');
