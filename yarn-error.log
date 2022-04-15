@@ -1,0 +1,129 @@
+Arguments: 
+  /home/nybble/.nvm/versions/node/v12.22.1/bin/node /home/nybble/.nvm/versions/node/v12.22.1/bin/yarn install
+
+PATH: 
+  /tmp/yarn--1644002859052-0.9252278980101183:/home/nybble/dev/host-cleaner/node_modules/.bin:/home/nybble/.config/yarn/link/node_modules/.bin:/home/nybble/.nvm/versions/node/v12.22.1/libexec/lib/node_modules/npm/bin/node-gyp-bin:/home/nybble/.nvm/versions/node/v12.22.1/lib/node_modules/npm/bin/node-gyp-bin:/home/nybble/.nvm/versions/node/v12.22.1/bin/node_modules/npm/bin/node-gyp-bin:/home/nybble/.nvm/versions/node/v12.22.1/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/home/nybble/dev/host-cleaner/node_modules/.bin:/home/nybble/.nvm/versions/node/v12.22.1/bin:/home/nybble/.local/bin:/home/nybble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+Yarn version: 
+  1.22.17
+
+Node version: 
+  12.22.1
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/@yandex-market%2fcodestyle: Not found
+      at Request.params.callback [as _callback] (/home/nybble/.nvm/versions/node/v12.22.1/lib/node_modules/yarn/lib/cli.js:67029:18)
+      at Request.self.callback (/home/nybble/.nvm/versions/node/v12.22.1/lib/node_modules/yarn/lib/cli.js:140883:22)
+      at Request.emit (events.js:314:20)
+      at Request.<anonymous> (/home/nybble/.nvm/versions/node/v12.22.1/lib/node_modules/yarn/lib/cli.js:141855:10)
+      at Request.emit (events.js:314:20)
+      at IncomingMessage.<anonymous> (/home/nybble/.nvm/versions/node/v12.22.1/lib/node_modules/yarn/lib/cli.js:141777:12)
+      at Object.onceWrapper (events.js:420:28)
+      at IncomingMessage.emit (events.js:326:22)
+      at endReadableNT (_stream_readable.js:1241:12)
+      at processTicksAndRejections (internal/process/task_queues.js:84:21)
+
+npm manifest: 
+  {
+    "name": "host-cleaner",
+    "version": "1.3.0",
+    "description": "Host Cleaner",
+    "bin": "./bin/host-cleaner",
+    "scripts": {
+      "build": "yarn run clean:dist && yarn run build:ts && yarn run build:files && yarn run build:bin && yarn run chmod",
+      "build:ts": "tsc --build tsconfig.release.json",
+      "build:files": "cp -r package.json README.md dist/",
+      "build:bin": "cp bin/host-cleaner-prod dist/bin/host-cleaner",
+      "chmod": "chmod -x dist/bin/host-cleaner",
+      "watch": "nodemon -q -w 'src/**' -e 'ts,json' -x 'node -r esbuild-runner/register src/index.ts'",
+      "clean": "yarn run clean:dist && yarn run clean:sandbox && yarn run clean:debug",
+      "clean:dist": "rm -rf dist",
+      "clean:sandbox": "rm -rf sandbox",
+      "clean:debug": "rm -rf debug",
+      "clean:reports": "rm -rf reports",
+      "revert": "rm -rf node_modules && rm -f yarn.lock",
+      "rebootstrap": "yarn run revert && yarn run bootstrap",
+      "bootstrap": "yarn install && touch .env",
+      "bootstrap:sandbox": "yarn run clean:sandbox && mkdir sandbox && cp .env sandbox/ && yarn run build && cd sandbox && yarn init -y && yarn add ../dist",
+      "test:ts": "tsc --build tsconfig.lint.json",
+      "test:eslint": "eslint . --format codeframe",
+      "test:jest": "NODE_ENV=TESTING jest",
+      "test:jest:watch": "NODE_ENV=TESTING jest --watch",
+      "ci:test:bootstrap:ts": "tsc --noEmit",
+      "ci:test:bootstrap:jest": "NODE_ENV=TESTING jest-ci .",
+      "ci:test:bootstrap:eslint": "eslint-ci .",
+      "task": "node -r esbuild-runner/register bin/host-cleaner",
+      "task:cleanDismissedUsers": "yarn run task -- cleanDismissedUsers",
+      "task:cleanOrphanedUsers": "yarn run task -- cleanOrphanedUsers",
+      "task:cleanNodeModules": "yarn run task -- cleanNodeModules",
+      "task:cleanOldNodeModules": "yarn run task -- cleanOldNodeModules",
+      "task:cleanOldUserServices": "yarn run task -- cleanOldUserServices",
+      "task:cleanUsersCacache": "yarn run task -- cleanUsersCacache",
+      "task:cleanUsersVSCode": "yarn run task -- cleanUsersVSCode",
+      "task:mailToDoubledUsers": "yarn run task -- mailToDoubledUsers",
+      "task:mailAboutGitBranches": "yarn run task -- mailAboutGitBranches"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "axios": "^0.21.4",
+      "dotenv": "^10.0.0",
+      "emailjs": "^3.7.0",
+      "node-ssh": "^12.0.2",
+      "yargs": "^17.3.1"
+    },
+    "devDependencies": {
+      "@babel/preset-env": "^7.16.11",
+      "@types/jest": "^27.4.0",
+      "@types/node": "^15.14.9",
+      "@types/node-ssh": "^7.0.1",
+      "@types/yargs": "^17.0.8",
+      "@typescript-eslint/eslint-plugin": "^5.10.2",
+      "@typescript-eslint/parser": "^5.10.2",
+      "@yandex-market/codestyle": "^3.3.1",
+      "babel-eslint": "^10.1.0",
+      "babel-jest": "^27.4.6",
+      "esbuild": "^0.14.18",
+      "esbuild-runner": "^2.2.1",
+      "eslint": "^7.32.0",
+      "eslint-config-airbnb-base": "^14.2.0",
+      "eslint-config-airbnb-typescript": "^12.0.0",
+      "eslint-plugin-import": "^2.25.4",
+      "eslint-plugin-jest": "^26.0.0",
+      "eslint-plugin-market": "^0.21.0",
+      "jest": "^27.4.7",
+      "nodemon": "^2.0.15",
+      "typescript": "^4.5.4"
+    },
+    "publishConfig": {
+      "registry": "http://npm.yandex-team.ru/"
+    },
+    "config": {
+      "affected": {
+        "build": {
+          "exclude": [
+            "@yandex-market/jest",
+            "@yandex-market/eslinter"
+          ]
+        }
+      },
+      "precommit": [
+        "eslint"
+      ],
+      "build": {
+        "build": {
+          "duration": 25000
+        }
+      }
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

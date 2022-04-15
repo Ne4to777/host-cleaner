@@ -14,14 +14,18 @@
 //     getOldUserServices, getOrphanedUsersPaths,
 // } from './sniffers';
 // import {log, log2, para, para2, parapipe, processExit0} from './utils';
-// import configs from './configs';
+import {getDismissedUsersPaths} from './sniffers';
+import {log} from './utils';
+import configs from './configs';
 //
-// const bash = connector({host: 'market.logrus01ed.yandex.ru'});
+// import {getConnector} from './helpers';
+//
+// const bash = getConnector({host: 'market.logrus01ed.yandex.ru'});
 // getServiceUserGitBranches(bash)('/var/lib/yandex/market-front-node-dev/naygeborin').then(log);
 // getUsersAllArray(bash)().then(log);
-// log('\n');
+log('\nbuild');
 
-// getDismissedUsersPaths(configs)('market.logrus01ed.yandex.ru').then(log);
+getDismissedUsersPaths(configs)('market.logrus01ed.yandex.ru').then(log);
 // getDoubledUsersPaths(configs)('market.logrus01ed.yandex.ru').then(log);
 // getGitBranches(configs)('market.logrus01ed.yandex.ru').then(log);
 // getNodeModulesPaths(configs)('market.logrus01ed.yandex.ru').then(log);

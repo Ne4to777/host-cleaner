@@ -1,1 +1,5 @@
-dist
+reports/
+debug/
+sandbox/
+dist/
+node_modules/
